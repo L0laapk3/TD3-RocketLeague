@@ -8,6 +8,9 @@ typedef std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, t
 
 class ReplayBuffer {
 public:
+
+    static const size_t maxSize = 1 << 16;
+
     ReplayBuffer() {}
 
     void addExperienceState(torch::Tensor state, torch::Tensor action, torch::Tensor reward, torch::Tensor next_state, torch::Tensor done)
@@ -42,7 +45,7 @@ public:
 
 
 private:
-    std::array<Experience, 1 << 4> circular_buffer;
+    std::array<Experience, maxSize> circular_buffer;
     size_t index = 0;
     bool full = false;
 };

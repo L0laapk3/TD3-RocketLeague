@@ -6,9 +6,9 @@
 #include "GameData.h"
 
 
-constexpr bool ALLOW_GPU = false;
+constexpr bool ALLOW_GPU = true;
 
-int BATCH_SIZE = 128;        // minibatch size
+size_t BATCH_SIZE = 128;        // minibatch size
 double GAMMA = 0.99;            // discount factor
 double TAU = 1e-3;              // for soft update of target parameters
 double LR_ACTOR = 1e-4;         // learning rate of the actor
@@ -95,7 +95,7 @@ void Agent::step(const Observation& state, const Action& action, float reward, c
 
     memory.addExperienceState(state_t, action_t, reward_t, next_state_t, done_t);
     // Learn, if enough samples are available in memory
-    if (memory.getLength() > size_t(BATCH_SIZE))
+    if (memory.getLength() >= std::min(BATCH_SIZE, memory.maxSize))
         learn(memory.sample(), GAMMA);
 }
 
