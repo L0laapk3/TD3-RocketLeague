@@ -57,7 +57,7 @@ add_library(SuperSonicML SHARED
         src/Hooks.h
         src/SuperSonicML.cpp
         src/SuperSonicML.h src/bots/BotClass.cpp src/bots/BotClass.h src/bots/AtbaBot.cpp src/bots/AtbaBot.h src/bots/AerialAtbaBot.cpp src/bots/AerialAtbaBot.h
-        src/experiments/Experiment.cpp src/experiments/Experiment.h
+        src/experiments/Experiment.h
         src/experiments/observation.cpp src/experiments/observation.h
         src/experiments/action.cpp src/experiments/action.h
         src/experiments/agent.cpp src/experiments/agent.h

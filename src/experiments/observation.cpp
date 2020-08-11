@@ -18,5 +18,6 @@ void Observation::readBotInput(const BotInputData& input, const vec3c& target) {
 	named.carVel = normalizePosition(car.vel);
 	named.carForward = car.forward();
 	named.carUp = car.up();
-	named.targetPos = dot(target - car.pos, car.orientation) / 13000.f;
+	named.targetPos = target;
+	named.targetLocalPos = dot(target - car.pos, car.orientation) / 13000.f;
 }
