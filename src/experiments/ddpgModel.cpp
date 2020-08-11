@@ -2,6 +2,16 @@
 #include "ddpgModel.h"
 #include "GameData.h"
 
+
+
+
+
+void initLayer(torch::nn::Linear& fc) {
+    float r = sqrtf(6.f / fc->weight.sizes()[1]);
+    torch::nn::init::uniform_(fc->weight, -r, r);
+}
+
+
 /******************* ACTOR *******************/
 
 Actor::Actor(int64_t state_size, int64_t action_size, int64_t seed, int64_t fc1_units, int64_t fc2_units) : torch::nn::Module()
@@ -14,18 +24,11 @@ Actor::Actor(int64_t state_size, int64_t action_size, int64_t seed, int64_t fc1_
   reset_parameters();
 }
 
-std::pair<double,double> Actor::hidden_init(torch::nn::Linear& layer) {
-    double lim = 1. / sqrt(layer->weight.sizes()[0]);
-    return std::make_pair(-lim, lim);
-}
-
 void Actor::reset_parameters()
 {
-    auto fc1_init = hidden_init(fc1);
-    torch::nn::init::uniform_(fc1->weight, fc1_init.first, fc1_init.second);
-    auto fc2_init = hidden_init(fc2);
-    torch::nn::init::uniform_(fc2->weight, fc2_init.first, fc2_init.second);
-    torch::nn::init::uniform_(fc3->weight, -3e-3, 3e-3);
+    initLayer(fc1);
+    initLayer(fc2);
+    initLayer(fc3);
 }
 
 torch::Tensor Actor::forward(torch::Tensor x)
@@ -61,18 +64,11 @@ Critic::Critic(int64_t state_size, int64_t action_size, int64_t seed, int64_t fc
     reset_parameters();
 }
 
-std::pair<double,double> Critic::hidden_init(torch::nn::Linear& layer) {
-    double lim = 1. / sqrt(layer->weight.sizes()[0]);
-    return std::make_pair(-lim, lim);
-}
-
 void Critic::reset_parameters()
 {
-    auto fcs1_init = hidden_init(fcs1);
-    torch::nn::init::uniform_(fcs1->weight, fcs1_init.first, fcs1_init.second);
-    auto fc2_init = hidden_init(fc2);
-    torch::nn::init::uniform_(fc2->weight, fc2_init.first, fc2_init.second);
-    torch::nn::init::uniform_(fc3->weight, -3e-3, 3e-3);
+    initLayer(fcs1);
+    initLayer(fc2);
+    initLayer(fc3);
 }
 
 torch::Tensor Critic::forward(torch::Tensor x, torch::Tensor action)

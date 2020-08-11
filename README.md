@@ -1,3 +1,5 @@
+loosely based on https://github.com/EmmiOcean/DDPG_LibTorch
+
 # SuperSonicML
 [Bakkesmod plugin](https://bakkesmod.com) that supplies inputs to rocket league at a very high speed.
 

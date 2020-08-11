@@ -42,7 +42,7 @@ public:
 
 
 private:
-    std::array<Experience, 1 << 14> circular_buffer;
+    std::array<Experience, 1 << 4> circular_buffer;
     size_t index = 0;
     bool full = false;
 };

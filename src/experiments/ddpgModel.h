@@ -10,7 +10,6 @@ public:
 
     torch::Tensor forward(torch::Tensor state);
     //torch::nn::BatchNormOptions bn_options(int64_t features);
-    std::pair<double,double> hidden_init(torch::nn::Linear& layer);
 
 
 private:
@@ -28,7 +27,6 @@ public:
     void reset_parameters();
 
     torch::Tensor forward(torch::Tensor x, torch::Tensor action);
-    std::pair<double,double> hidden_init(torch::nn::Linear& layer);
 
 
 private:

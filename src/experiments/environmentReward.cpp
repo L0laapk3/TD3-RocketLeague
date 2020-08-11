@@ -13,7 +13,7 @@ void Environment::computeReward(const BotInputData& input) {
 	float distance = norm(target - car.pos);
 	//SuperSonicML::Share::cvarManager->log(std::string("dist ")+std::to_string(distance)+std::string(" ")+std::to_string(target[0])+std::string(" ")+std::to_string(car.pos[0]));
 	
-	reward = -distance;
+	reward = -distance / 10000.f;
 	//SuperSonicML::Share::cvarManager->log(std::to_string(distance));
 	done = distance < 100.f;
 }
