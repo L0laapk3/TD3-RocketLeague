@@ -64,7 +64,7 @@ add_library(SuperSonicML SHARED
         src/experiments/ddpgModel.cpp src/experiments/ddpgModel.h
         src/experiments/environment.cpp src/experiments/environmentReward.cpp src/experiments/environment.h
         src/experiments/mainML.cpp
-        src/experiments/replayBuffer.h
+        src/experiments/replayBuffer.cpp src/experiments/replayBuffer.h
 )
 
 target_precompile_headers(SuperSonicML

@@ -85,18 +85,13 @@ void Agent::reset()
     noise->reset();
 }
 
-void Agent::step(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done)
+void Agent::addExperienceState(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done)
 {
-    torch::Tensor state_t = torch::tensor(torch::ArrayRef(state.array)).to(device);
-    torch::Tensor action_t = torch::tensor(torch::ArrayRef(action.array)).to(device);
-    torch::Tensor reward_t = torch::tensor(reward, torch::dtype(torch::kFloat)).to(device);
-    torch::Tensor next_state_t = torch::tensor(torch::ArrayRef(nextState.array)).to(device);
-    torch::Tensor done_t = torch::tensor(done, torch::dtype(torch::kFloat)).to(device);
 
-    memory.addExperienceState(state_t, action_t, reward_t, next_state_t, done_t);
+    memory.addExperienceState(state, action, reward, next_state, done);
     // Learn, if enough samples are available in memory
     if (memory.getLength() >= std::min(BATCH_SIZE, memory.maxSize))
-        learn(memory.sample(), GAMMA);
+        learn(memory.sample(BATCH_SIZE), GAMMA);
 }
 
 void Agent::learn(std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> experiences, double gamma)

@@ -18,7 +18,7 @@ public:
     Agent(const Agent &other) = delete;
     Agent() = delete;
 
-    void step(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done);
+    void save(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done);
     void act(const Observation& state, Action& action);
     void reset();
     void learn(std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> experiences, double gamma);

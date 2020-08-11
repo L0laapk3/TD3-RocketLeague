@@ -1,54 +1,39 @@
-#ifndef PROJECT_REPLAYBUFFER_H
-#define PROJECT_REPLAYBUFFER_H
+#pragma once
 
 #include <array>
+#include <algorithm>
+#include "action.h"
+#include "observation.h"
 #include "torch/torch.h"
 
-typedef std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> Experience;
+struct Experience {
+    Observation state;
+    Action action;
+    float reward;
+    Observation nextState;
+    float done;
+};
+struct Batch {
+    torch::Tensor state;
+    torch::Tensor action;
+    torch::Tensor reward;
+    torch::Tensor nextState;
+    torch::Tensor done;
+};
 
 class ReplayBuffer {
 public:
 
     static const size_t maxSize = 1 << 16;
+    size_t getLength() const;
 
-    ReplayBuffer() {}
+    void addExperienceState(Experience experience);
 
-    void addExperienceState(torch::Tensor state, torch::Tensor action, torch::Tensor reward, torch::Tensor next_state, torch::Tensor done)
-    {
-        addExperienceState(std::make_tuple(state, action, reward, next_state, done));
-    }
-
-    void addExperienceState(Experience experience) {
-        circular_buffer[index++] = experience;
-        if (index == circular_buffer.size()) {
-            full = true;
-            index = 0;
-        }
-    }
-
-    std::vector<Experience> sample(int num_agent) {
-        std::vector<Experience> experiences;
-        for (int i = 0; i < num_agent; i++) {
-            experiences.push_back(sample());
-        }
-        return experiences;
-    }
-
-    Experience sample() {
-            return circular_buffer[static_cast<size_t>(rand() % static_cast<int>(full ? circular_buffer.size() : index))];
-    }
-
-    size_t getLength() {
-        return circular_buffer.size();
-    }
-
-
+    Batch sample(size_t batchSize);
 
 private:
-    std::array<Experience, maxSize> circular_buffer;
+    std::array<Experience, maxSize> circularBuffer;
     size_t index = 0;
     bool full = false;
 };
-
-#endif //PROJECT_REPLAYBUFFER_H
 

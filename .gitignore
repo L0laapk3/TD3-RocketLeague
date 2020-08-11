@@ -52,3 +52,7 @@ bakkes_patchplugin.py
 *.exe
 *.out
 *.app
+
+
+
+Xenos.log
