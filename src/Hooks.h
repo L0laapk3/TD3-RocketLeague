@@ -3,7 +3,7 @@
 #include <bakkesmod/wrappers/GameObject/CarWrapper.h>
 #include <bots/AerialAtbaBot.h>
 #include <bots/AtbaBot.h>
-#include <experiments/TeacherLearnerExperiment.h>
+#include <experiments/Environment.h>
 
 struct ACar_TA_eventSetVehicleInput_Params {
 	struct ControllerInput NewInput;
@@ -13,5 +13,6 @@ struct ACar_TA_eventSetVehicleInput_Params {
 namespace SuperSonicML::Hooks {
 	extern AerialAtbaBot atbaBot;
 
+	void unload();
 	void UpdateData(CarWrapper cw, void* params, const std::string& eventName);
 }

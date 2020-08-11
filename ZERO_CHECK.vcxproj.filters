@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\CMakeFiles\4d5540bc82c8a57301e867755c9592b0\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{AADF627D-4B86-3E35-AE14-AFCE3EE01536}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,27 @@
+<XenosConfig>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\asmjit.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\c10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\fbgemm.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiomp5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiompstubs5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_cpu.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_global_deps.dll</imagePath>
+	<manualMapFlags>0</manualMapFlags>
+	<procName>RocketLeague.exe</procName>
+	<hijack>0</hijack>
+	<unlink>0</unlink>
+	<erasePE>0</erasePE>
+	<close>0</close>
+	<krnHandle>0</krnHandle>
+	<injIndef>0</injIndef>
+	<processMode>0</processMode>
+	<injectMode>0</injectMode>
+	<delay>0</delay>
+	<period>0</period>
+	<skip>0</skip>
+	<procCmdLine/>
+	<initRoutine/>
+	<initArgs/>
+</XenosConfig>
+

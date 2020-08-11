@@ -22,6 +22,7 @@ namespace SuperSonicML::Plugin {
 	}
 
 	void SuperSonicMLPlugin::onUnload() {
+		SuperSonicML::Hooks::unload();
 		pluginInstance = nullptr;
 	}
 }

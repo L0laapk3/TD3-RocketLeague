@@ -10,6 +10,12 @@
 #include "math/math.h"// Headers taken from RLU
 
 namespace SuperSonicML::Hooks {
+	static Experiment* currentExperiment;
+
+	void unload() {
+		if (currentExperiment != nullptr)
+			currentExperiment->~Experiment();
+	}
 
 	void UpdateData(CarWrapper myCar, void* pVoidParams, const std::string& eventName) {
 		if (!*SuperSonicML::Share::cvarEnabled)
@@ -76,9 +82,10 @@ namespace SuperSonicML::Hooks {
 
 			auto botInputData = BotInputData{ ballData, carData, gravity, myCar.GetPhysicsTime(), vehicleInput->NewInput };
 
+			if (currentExperiment == nullptr)
+				currentExperiment = new Environment();
 			memset(&vehicleInput->NewInput, 0, sizeof(ControllerInput));
-			static auto currentExperiment = TeacherLearnerExperiment(std::make_shared<AtbaBot>());
-			currentExperiment.process(botInputData, vehicleInput->NewInput);
+			currentExperiment->process(botInputData, vehicleInput->NewInput);
 
 			static std::once_flag onceFlag;
 

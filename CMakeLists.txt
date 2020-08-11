@@ -56,7 +56,16 @@ add_library(SuperSonicML SHARED
         src/Hooks.cpp
         src/Hooks.h
         src/SuperSonicML.cpp
-        src/SuperSonicML.h src/bots/BotClass.cpp src/bots/BotClass.h src/bots/AtbaBot.cpp src/bots/AtbaBot.h src/bots/AerialAtbaBot.cpp src/bots/AerialAtbaBot.h src/experiments/Experiment.cpp src/experiments/Experiment.h src/experiments/TeacherLearnerExperiment.cpp src/experiments/TeacherLearnerExperiment.h)
+        src/SuperSonicML.h src/bots/BotClass.cpp src/bots/BotClass.h src/bots/AtbaBot.cpp src/bots/AtbaBot.h src/bots/AerialAtbaBot.cpp src/bots/AerialAtbaBot.h
+        src/experiments/Experiment.cpp src/experiments/Experiment.h
+        src/experiments/observation.cpp src/experiments/observation.h
+        src/experiments/action.cpp src/experiments/action.h
+        src/experiments/agent.cpp src/experiments/agent.h
+        src/experiments/ddpgModel.cpp src/experiments/ddpgModel.h
+        src/experiments/environment.cpp src/experiments/environmentReward.cpp src/experiments/environment.h
+        src/experiments/mainML.cpp
+        src/experiments/replayBuffer.h
+)
 
 target_precompile_headers(SuperSonicML
         PRIVATE
