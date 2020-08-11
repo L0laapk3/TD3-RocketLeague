@@ -7,10 +7,10 @@
 #include "torch/torch.h"
 
 struct Experience {
-    Observation state;
-    Action action;
+    std::array<float, Observation::size> state;
+    std::array<float, Action::size> action;
     float reward;
-    Observation nextState;
+    std::array<float, Observation::size> nextState;
     float done;
 };
 struct Batch {
@@ -25,7 +25,7 @@ class ReplayBuffer {
 public:
 
     static const size_t maxSize = 1 << 16;
-    size_t getLength() const;
+    size_t getLength();
 
     void addExperienceState(Experience experience);
 

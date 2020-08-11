@@ -11,7 +11,7 @@ void ReplayBuffer::addExperienceState(Experience experience) {
 	}
 }
 
-void ReplayBuffer::getLength const {
+void ReplayBuffer::getLength() {
 	return full ? circularBuffer.size() : index;
 }
 
