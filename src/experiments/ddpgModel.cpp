@@ -7,7 +7,8 @@
 
 
 void initLayer(torch::nn::Linear& fc) {
-    float r = sqrtf(6.f / fc->weight.sizes()[1]);
+    // https://mmuratarat.github.io/2019-02-25/xavier-glorot-he-weight-init
+    float r = sqrtf(6.f / (fc->weight.sizes()[0] + fc->weight.sizes()[1]));
     torch::nn::init::uniform_(fc->weight, -r, r);
 }
 

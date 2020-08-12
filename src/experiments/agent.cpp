@@ -16,8 +16,6 @@ double LR_CRITIC = 1e-3;        // learning rate of the critic
 double WEIGHT_DECAY = 0;        // L2 weight decay
 
 int Agent::totalNumberOfAgents = 0;
-auto learnCount = 0ULL;
-auto actCount = 0ULL;
 
 Agent::Agent(int state_size, int action_size, int random_seed )
 : actor_local(std::make_shared<Actor>(state_size, action_size, random_seed)),
@@ -74,23 +72,13 @@ void Agent::hard_copy_weights( std::shared_ptr<torch::nn::Module> local, std::sh
     }
 }
 
-int count = 0;
-auto start = std::chrono::high_resolution_clock::now();
 void Agent::act(const Observation& state, Action& actionOutput) {
     torch::Tensor torchState = torch::tensor(torch::ArrayRef(state.array));
 
     auto actorLk = std::unique_lock(mActor);
     actor_local->eval();
-	start = std::chrono::high_resolution_clock::now();
     torch::NoGradGuard guard;
     auto action = actor_local->forward(torchState);
-    
-    {
-        static float avg = 0.f;
-        avg = .99 * avg + .01 * std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
-        if (count++ % 1000 == 0 && false)
-            SuperSonicML::Share::cvarManager->log(std::to_string((int)avg)+std::string("µs"));
-    }
     actor_local->train();
     actorLk.unlock();
     std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
@@ -98,22 +86,7 @@ void Agent::act(const Observation& state, Action& actionOutput) {
         noise->sample(v);
     for (size_t i =0; i < v.size(); i++)
         actionOutput[i] = std::fmin(std::fmax(v[i],-1.f), 1.f);
-
-    actCount++;
-
     
-    static auto lastMsg = std::chrono::system_clock::now();
-    auto now = std::chrono::system_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - lastMsg).count() / 1000000.f;
-
-    if (elapsed >= 2.f) {
-        char buf[200];
-        sprintf_s(buf, "%d tps | %d lps", (int)(actCount / elapsed), (int)(learnCount / elapsed));
-        SuperSonicML::Share::cvarManager->log(buf);
-        lastMsg = now;
-        actCount = 0;
-        learnCount = 0;
-    }
 }
 
 void Agent::reset() {
@@ -172,8 +145,6 @@ void Agent::learn() {
     soft_update(actor_local, actor_target, TAU);
     actorLk.unlock();
     actor_target->to(device);
-
-    learnCount += BATCH_SIZE;
 }
 
 void Agent::soft_update(std::shared_ptr<torch::nn::Module> local, std::shared_ptr<torch::nn::Module> target, double tau)

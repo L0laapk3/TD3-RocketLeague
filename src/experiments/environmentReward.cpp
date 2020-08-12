@@ -15,7 +15,7 @@ void Environment::computeReward(const BotInputData& input) {
 	
 	reward = -distance / 10000.f;
 	//SuperSonicML::Share::cvarManager->log(std::to_string(distance));
-	done = distance < 100.f;
+	done = distance < 0.f;
 }
 
 
