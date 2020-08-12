@@ -2,6 +2,7 @@
 #include "replayBuffer.h"
 #include <algorithm>
 #include <random>
+#include <stack>
 #include "GameData.h"
 
 
@@ -10,11 +11,20 @@ void ReplayBuffer::addExperienceState(Observation& state, Action& action, float 
 	addExperienceState(Experience{state.array, action.array, reward, nextState.array, done ? 1.f : 0.f});
 }
 
+std::stack<Experience> experienceBacklog;
 void ReplayBuffer::addExperienceState(Experience experience) {
-	circularBuffer[index++] = experience;
-	if (index == circularBuffer.size()) {
-		full = true;
-		index = 0;
+	experienceBacklog.push(experience);
+	auto bufferLk = std::unique_lock(mBuffer, std::defer_lock);
+	if (bufferLk.try_lock()) {
+		while (!experienceBacklog.empty()) {
+			circularBuffer[index++] = experienceBacklog.top();
+			experienceBacklog.pop();
+		}
+
+		if (index == circularBuffer.size()) {
+			full = true;
+			index = 0;
+		}
 	}
 }
 
@@ -32,8 +42,11 @@ Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
 
 	static auto rand = std::mt19937{std::random_device{}()};
     static std::uniform_int_distribution<size_t> dist(0, getLength() - 1);
-	for (size_t i = 0; i < batchSize; i++) {
-		Experience& sample = circularBuffer[dist(rand)];
+	size_t i = 0;
+	while(i < batchSize) {
+		auto bufferLk = std::unique_lock(mBuffer);
+		Experience sample = circularBuffer[dist(rand)];
+		bufferLk.unlock();
 		for (int j = 0; j < Observation::size; j++) {
 			float s = sample.state[j];
 			states[i][j] = s;
@@ -43,6 +56,7 @@ Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
 			actions[i][j] = sample.action[j];
 		rewards[i] = torch::tensor(sample.reward, torch::dtype(torch::kFloat));
 		dones[i] = sample.done;
+		i++;
 	}
 
 	return {

@@ -2,6 +2,7 @@
 #include "environment.h"
 #include "agent.h"
 #include "GameData.h"
+#include <thread>
 
 
 
@@ -27,9 +28,21 @@ void trainEnvironment(Environment* env, Agent& agent) {
 }
 
 
+void learnLoop(Environment* env, Agent* agent) {
+	while (!env->stopThread)
+		agent->learn();
+}
+
+
+std::thread learnThread;
 void mainML(Environment* env) {
 	Agent agent = Agent(Observation::size, Action::size, 1);
+	learnThread = std::thread(learnLoop, env, &agent);
+
 	env->observe();
 	while (!env->stopThread)
 		trainEnvironment(env, agent);
+	
+	learnThread.join();
 }
+

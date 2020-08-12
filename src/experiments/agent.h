@@ -4,6 +4,7 @@
 #include "ddpgModel.h"
 #include "ReplayBuffer.h"
 #include "environment.h"
+#include <mutex>
 
 class OUNoise;
 
@@ -24,10 +25,12 @@ public:
     void saveCheckPoints(int e);
     void loadCheckPoints(int e);
 
+	std::mutex mActor;
     std::shared_ptr<Actor> actor_local;
     std::shared_ptr<Actor> actor_target;
     torch::optim::Adam actor_optimizer;
 
+	std::mutex mCritic;
     std::shared_ptr<Critic> critic_local;
     std::shared_ptr<Critic> critic_target;
     torch::optim::Adam critic_optimizer;

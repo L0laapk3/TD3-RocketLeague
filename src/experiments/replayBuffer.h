@@ -4,6 +4,7 @@
 #include "action.h"
 #include "observation.h"
 #include "torch/torch.h"
+#include <mutex>
 
 struct Experience {
     std::array<float, Observation::size> state;
@@ -34,6 +35,7 @@ public:
     Batch sample(int batchSize, torch::Device& device);
 
 private:
+    std::mutex mBuffer;
     std::array<Experience, maxSize> circularBuffer;
     size_t index = 0;
     bool full = false;

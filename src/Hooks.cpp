@@ -35,7 +35,7 @@ namespace SuperSonicML::Hooks {
 		if (elapsedMilli.count() >= 2000) {
 			char buf[200];
 			sprintf_s(buf, "Phys-ticks: %d in %d ms", ticks / 2, (int) elapsedMilli.count() / 2);
-			SuperSonicML::Share::cvarManager->log(buf);
+			//SuperSonicML::Share::cvarManager->log(buf);
 			lastMsg = now;
 			ticks = 0;
 		}
