@@ -4,8 +4,6 @@
 
 
 Environment::Environment() {
-	SuperSonicML::Share::cvarManager->log("create shit");
-	SuperSonicML::Share::cvarManager->log("about to create side shit");
 	mainMLThread = std::thread(mainML, this);
 };
 

@@ -18,7 +18,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
 		env->step();
 		env->observe();
 		total_reward += env->reward;
-		agent.step(oldObservation, env->action, env->reward, env->observation, env->done);
+		agent.addExperienceState(oldObservation, env->action, env->reward, env->observation, env->done);
 		if (env->done || env->stopThread)
 			break;
 	}

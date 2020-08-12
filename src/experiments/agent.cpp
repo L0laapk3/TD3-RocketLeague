@@ -8,7 +8,7 @@
 
 constexpr bool ALLOW_GPU = true;
 
-size_t BATCH_SIZE = 128;        // minibatch size
+size_t BATCH_SIZE = 64;        // minibatch size
 double GAMMA = 0.99;            // discount factor
 double TAU = 1e-3;              // for soft update of target parameters
 double LR_ACTOR = 1e-4;         // learning rate of the actor
@@ -31,10 +31,10 @@ device(torch::kCPU)
     torch::DeviceType device_type;
     if (torch::cuda::is_available() && ALLOW_GPU) {
         device_type = torch::kCUDA;
-        std::cout << "Agent - Cuda available" << std::endl;
+	    SuperSonicML::Share::cvarManager->log(std::string("Cuda available"));
     } else {
         device_type = torch::kCPU;
-        std::cout << "Agent - CPU used" << std::endl;
+	    SuperSonicML::Share::cvarManager->log(std::string("CPU only"));
 
     }
     device = torch::Device(device_type);
@@ -80,32 +80,29 @@ void Agent::act(const Observation& state, Action& actionOutput) {
         actionOutput[i] = std::fmin(std::fmax(v[i],-1.f), 1.f);
 }
 
-void Agent::reset()
-{
+void Agent::reset() {
     noise->reset();
 }
 
-void Agent::addExperienceState(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done)
-{
+void Agent::addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done) {
 
-    memory.addExperienceState(state, action, reward, next_state, done);
+    memory.addExperienceState(state, action, reward, nextState, done);
     // Learn, if enough samples are available in memory
     if (memory.getLength() >= std::min(BATCH_SIZE, memory.maxSize))
-        learn(memory.sample(BATCH_SIZE), GAMMA);
+        learn();
 }
 
-void Agent::learn(std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> experiences, double gamma)
-{
+void Agent::learn() {
 //    Update policy and value parameters using given batch of experience tuples.
 //    Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
 
-    auto& [state, action, reward, next_state, done] = experiences;
+    auto& [state, action, reward, nextState, done] = memory.sample(BATCH_SIZE, device);
 
 // ---------------------------- update critic ---------------------------- #
 
-    auto actions_next = actor_target->forward(next_state);
-    auto Q_targets_next = critic_target->forward(next_state, actions_next);
-    auto Q_targets = reward + (gamma * Q_targets_next * (1 - done));
+    auto actions_next = actor_target->forward(nextState);
+    auto Q_targets_next = critic_target->forward(nextState, actions_next);
+    auto Q_targets = reward + (GAMMA * Q_targets_next * (1 - done));
     auto Q_expected = critic_local->forward(state, action); 
 
     torch::Tensor critic_loss = torch::mse_loss(Q_expected, Q_targets.detach());

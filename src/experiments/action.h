@@ -7,7 +7,7 @@
 
 class Action {
 public:
-	static const size_t size = 1;
+	static const int size = 1;
 	union {
 		std::array<float, size> array;
 		struct {

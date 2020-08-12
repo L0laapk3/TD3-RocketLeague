@@ -12,7 +12,7 @@ public:
 	Observation(const Observation& o) : array(o.array) {};
 	~Observation() {};
 
-	static const size_t size = 7*3;
+	static const int size = 7*3;
 	union {
 		std::array<float, size> array;
 		struct {

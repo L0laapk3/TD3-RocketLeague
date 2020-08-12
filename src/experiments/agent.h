@@ -1,6 +1,4 @@
-
-#ifndef PROJECT_AGENT_H
-#define PROJECT_AGENT_H
+#pragma once
 
 #include <torch/torch.h>
 #include "ddpgModel.h"
@@ -18,10 +16,10 @@ public:
     Agent(const Agent &other) = delete;
     Agent() = delete;
 
-    void save(const Observation& state, const Action& action, float reward, const Observation& nextState, bool done);
+    void addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done);
     void act(const Observation& state, Action& action);
     void reset();
-    void learn(std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> experiences, double gamma);
+    void learn();
 
     void saveCheckPoints(int e);
     void loadCheckPoints(int e);
@@ -81,6 +79,3 @@ public:
         return action;
     }
 };
-
-#endif //PROJECT_AGENT_H
-

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <algorithm>
 #include "action.h"
 #include "observation.h"
 #include "torch/torch.h"
@@ -24,12 +23,15 @@ struct Batch {
 class ReplayBuffer {
 public:
 
-    static const size_t maxSize = 1 << 16;
-    size_t getLength();
+    static const size_t maxSize = 1 << 12;
+    size_t getLength() {
+        return full ? circularBuffer.size() : index;
+    }
 
+    void addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done);
     void addExperienceState(Experience experience);
 
-    Batch sample(size_t batchSize);
+    Batch sample(int batchSize, torch::Device& device);
 
 private:
     std::array<Experience, maxSize> circularBuffer;
