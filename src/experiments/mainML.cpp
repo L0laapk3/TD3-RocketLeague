@@ -4,13 +4,14 @@
 #include "GameData.h"
 #include <thread>
 #include <chrono>
+#include <atomic>
 
+std::atomic<bool> stepped = false;
 
 auto actCount = 0ULL;
 auto learnCount = 0ULL;
 float totalReward = 0.f;
 auto totalSteps = 0ULL;
-float avgLastDistance = 0.f;
 void trainEnvironment(Environment* env, Agent& agent) {
 	env->reset();
 	env->observe();
@@ -21,14 +22,13 @@ void trainEnvironment(Environment* env, Agent& agent) {
 		auto oldObservation = env->observation;
 		env->step();
 		env->observe();
+		stepped = true;
 		totalReward += env->reward;
 		totalSteps++;
 		agent.addExperienceState(oldObservation, env->action, env->reward, env->observation, env->done);
 		if (env->done || env->stopThread)
 			break;
 	}
-	float distance = env->reward * 10000.f;
-	avgLastDistance = .95f * avgLastDistance + .05f * distance;
 
 	
     static auto lastMsg = std::chrono::system_clock::now();
@@ -37,7 +37,8 @@ void trainEnvironment(Environment* env, Agent& agent) {
 
     if (elapsed >= 2.f) {
         char buf[200];
-        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %d avgLastDistance", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), (int)avgLastDistance);
+		
+        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), agent.actor_local_cpu.toString().c_str());
         SuperSonicML::Share::cvarManager->log(buf);
         lastMsg = now;
         actCount = 0;
@@ -50,20 +51,22 @@ void trainEnvironment(Environment* env, Agent& agent) {
 
 
 void learnLoop(Environment* env, Agent* agent) {
-	while (!env->stopThread)
-		if (!*SuperSonicML::Share::cvarEnableTraining)
+	while (!env->stopThread) {
+		if (!*SuperSonicML::Share::cvarEnableTraining || !stepped)
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		else {
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			agent->learn();
 			learnCount += 512;
+			stepped = false;
 		}
-
+	}
 }
 
 
 std::thread learnThread;
 void mainML(Environment* env) {
-	Agent agent = Agent(Observation::size, Action::size, 1);
+	Agent agent = Agent();
 	learnThread = std::thread(learnLoop, env, &agent);
 
 	env->observe();

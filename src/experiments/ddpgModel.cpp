@@ -1,8 +1,9 @@
 #include <math.h>
 #include "ddpgModel.h"
 #include "GameData.h"
-
-
+#include <string>
+#include "action.h"
+#include "observation.h"
 
 
 
@@ -15,32 +16,46 @@ void initLayer(torch::nn::Linear& fc) {
 
 /******************* ACTOR *******************/
 
-Actor::Actor(int64_t state_size, int64_t action_size, int64_t seed, int64_t fc1_units, int64_t fc2_units) : torch::nn::Module()
-{
-  torch::manual_seed(seed);
-  fc1 = register_module("fc1", torch::nn::Linear(state_size, fc1_units));
-  fc2 = register_module("fc2", torch::nn::Linear(fc1_units, fc2_units));
-  fc3 = register_module("fc3", torch::nn::Linear(fc2_units, action_size));
+Actor::Actor() : torch::nn::Module() {
+    fc1 = register_module("fc1", torch::nn::Linear(Observation::size, Action::size));
+  //fc2 = register_module("fc2", torch::nn::Linear(fc1_units, fc2_units));
+  //fc3 = register_module("fc3", torch::nn::Linear(fc2_units, action_size));
 //  bn1 = register_module("bn1", torch::nn::BatchNorm(fc1_units));
-  reset_parameters();
+}
+
+Actor::Actor(torch::Device device) : Actor() {
+    reset_parameters();
+    this->to(device);
+}
+Actor::Actor(const Actor& actor, torch::Device device) : Actor() {
+    for (size_t i = 0; i < actor.parameters().size(); i++)
+        parameters()[i] = actor.parameters()[i];
+    this->to(device);
 }
 
 void Actor::reset_parameters()
 {
     initLayer(fc1);
-    initLayer(fc2);
-    initLayer(fc3);
+    //initLayer(fc2);
+    //initLayer(fc3);
 }
 
 torch::Tensor Actor::forward(torch::Tensor x)
 {
-    x = torch::relu(fc1->forward(x));
-//    bn1->forward(x);
-    x = torch::relu(fc2->forward(x));
-    x = fc3->forward(x);
+    x = fc1->forward(x);
+    //x = torch::relu(x);
+    //x = fc2->forward(x)
+    //x = torch::relu(x);
+    //x = fc3->forward(x);
     x = torch::tanh(x);
     return x;
 
+}
+
+std::string Actor::toString() {
+    char buf[200];
+	sprintf_s(buf, "%.5f %.5f %.5f", fc1->weight[0][0].item<float>(), fc1->weight[0][1].item<float>(), fc1->weight[0][2].item<float>());
+    return std::string(buf);  
 }
 
 // torch::nn::BatchNormOptions Actor::bn_options(int64_t features){
@@ -55,18 +70,24 @@ torch::Tensor Actor::forward(torch::Tensor x)
 /******************* Critic *****************/
 
 
-Critic::Critic(int64_t state_size, int64_t action_size, int64_t seed, int64_t fcs1_units, int64_t fc2_units) : torch::nn::Module()
-{
-    torch::manual_seed(seed);
-    fcs1 = register_module("fcs1", torch::nn::Linear(state_size, fcs1_units));
-    fc2 = register_module("fc2", torch::nn::Linear(fcs1_units + action_size, fc2_units));
+Critic::Critic() : torch::nn::Module() {
+    fcs1 = register_module("fcs1", torch::nn::Linear(Observation::size, fcs1_units));
+    fc2 = register_module("fc2", torch::nn::Linear(fcs1_units + Action::size, fc2_units));
     fc3 = register_module("fc3", torch::nn::Linear(fc2_units, 1));
 //    bn1 = register_module("bn1", torch::nn::BatchNorm(fcs1_units));
-    reset_parameters();
 }
 
-void Critic::reset_parameters()
-{
+Critic::Critic(torch::Device device) : Critic() {
+    reset_parameters();
+    this->to(device);
+}
+Critic::Critic(const Critic& critic, torch::Device device) : Critic() {
+    for (size_t i = 0; i < critic.parameters().size(); i++)
+        parameters()[i] = critic.parameters()[i];
+    this->to(device);
+}
+
+void Critic::reset_parameters() {
     initLayer(fcs1);
     initLayer(fc2);
     initLayer(fc3);

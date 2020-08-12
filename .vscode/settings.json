@@ -65,6 +65,17 @@
 		"xtr1common": "cpp",
 		"xtree": "cpp",
 		"xutility": "cpp",
-		"stack": "cpp"
+		"stack": "cpp",
+		"atomic": "cpp",
+		"cinttypes": "cpp",
+		"complex": "cpp",
+		"condition_variable": "cpp",
+		"forward_list": "cpp",
+		"numeric": "cpp",
+		"optional": "cpp",
+		"set": "cpp",
+		"unordered_set": "cpp",
+		"valarray": "cpp",
+		"variant": "cpp"
 	}
 }

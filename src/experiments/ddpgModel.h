@@ -4,16 +4,23 @@
 #include <torch/torch.h>
 
 class Actor : public torch::nn::Module {
+private:
+    Actor();
+
 public:
-    Actor(int64_t state_size, int64_t action_size, int64_t seed = 0, int64_t fc1_units=40, int64_t fc2_units=30);
+    static const int fc1_units = 40;
+    static const int fc2_units = 30;
+
+    Actor(torch::Device device);
+    Actor(const Actor& actor, torch::Device device);
     void reset_parameters();
 
     torch::Tensor forward(torch::Tensor state);
     //torch::nn::BatchNormOptions bn_options(int64_t features);
 
+    std::string toString();
 
-private:
-    torch::nn::Linear fc1{nullptr}, fc2{nullptr}, fc3{nullptr};
+    torch::nn::Linear fc1{nullptr};//, fc2{nullptr}, fc3{nullptr};
     //torch::nn::BatchNorm bn1{nullptr};
 };
 
@@ -21,15 +28,20 @@ private:
 /******************* Critic *****************/
 
 class Critic : public torch::nn::Module {
+private:
+    Critic();
 public:
-    Critic(int64_t state_size, int64_t action_size, int64_t seed = 0, int64_t fcs1_units=40, int64_t fc2_units=30);
+    static const int fcs1_units = 40;
+    static const int fc2_units = 30;
+
+    Critic(torch::Device device);
+    Critic(const Critic& critic, torch::Device device);
 
     void reset_parameters();
 
     torch::Tensor forward(torch::Tensor x, torch::Tensor action);
 
 
-private:
     torch::nn::Linear fcs1{nullptr}, fc2{nullptr}, fc3{nullptr};
     //torch::nn::BatchNorm bn1{nullptr};
 };
