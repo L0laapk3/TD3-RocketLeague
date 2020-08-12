@@ -11,8 +11,8 @@ constexpr bool ALLOW_GPU = true;
 size_t BATCH_SIZE = 512;        // minibatch size
 double GAMMA = 0.99;            // discount factor
 double TAU = 1e-3;              // for soft update of target parameters
-double LR_ACTOR = 1e-4;         // learning rate of the actor
-double LR_CRITIC = 1e-3;        // learning rate of the critic
+double LR_ACTOR = 5e-6;         // learning rate of the actor
+double LR_CRITIC = 5e-5;        // learning rate of the critic
 double WEIGHT_DECAY = 0;        // L2 weight decay
 
 int Agent::totalNumberOfAgents = 0;

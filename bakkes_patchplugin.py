@@ -9,6 +9,7 @@ TODO: save config?
 """
 import sys, os, shutil, websockets, time
 import asyncio
+from time import sleep
  
 bakkesmod_plugin_folder = "C:/Program Files (x86)/Steam/steamapps/common/rocketleague/Binaries/Win64/bakkesmod/plugins/"
 bakkesmod_server = 'ws://127.0.0.1:9002'
@@ -30,6 +31,7 @@ async def main_loop():
 			await websocket.send('rcon_password ' + rcon_password)
 			auth_status = await websocket.recv()
 			assert auth_status == 'authyes'
+			sleep(0.1)
  
 			filename = os.path.basename(swap_file)
 			plugin_name = filename[0:filename.index('.')]
