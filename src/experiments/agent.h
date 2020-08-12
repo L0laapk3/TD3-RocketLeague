@@ -27,6 +27,7 @@ public:
 
 	std::mutex mActor;
     std::shared_ptr<Actor> actor_local;
+    std::shared_ptr<Actor> actor_local_gpu;
     std::shared_ptr<Actor> actor_target;
     torch::optim::Adam actor_optimizer;
 

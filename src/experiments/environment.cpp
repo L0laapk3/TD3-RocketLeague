@@ -2,6 +2,7 @@
 #include "environment.h"
 #include "GameData.h"
 
+#include "chrono"
 
 Environment::Environment() {
 	mainMLThread = std::thread(mainML, this);

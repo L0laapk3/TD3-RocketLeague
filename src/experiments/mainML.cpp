@@ -3,6 +3,7 @@
 #include "agent.h"
 #include "GameData.h"
 #include <thread>
+#include <chrono>
 
 
 void trainEnvironment(Environment* env, Agent& agent) {
@@ -23,7 +24,8 @@ void trainEnvironment(Environment* env, Agent& agent) {
 			break;
 	}
 
-	SuperSonicML::Share::cvarManager->log(std::string("total reward: ")+std::to_string(total_reward)+"\tsteps: "+std::to_string(total_steps));
+	// if (*SuperSonicML::Share::cvarEnableTraining)
+	// 	SuperSonicML::Share::cvarManager->log(std::string("total reward: ")+std::to_string(total_reward)+"\tsteps: "+std::to_string(total_steps));
 }
 
 

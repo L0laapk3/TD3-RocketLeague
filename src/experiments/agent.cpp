@@ -8,7 +8,7 @@
 
 constexpr bool ALLOW_GPU = true;
 
-size_t BATCH_SIZE = 256;        // minibatch size
+size_t BATCH_SIZE = 512;        // minibatch size
 double GAMMA = 0.99;            // discount factor
 double TAU = 1e-3;              // for soft update of target parameters
 double LR_ACTOR = 1e-4;         // learning rate of the actor
@@ -21,6 +21,7 @@ auto actCount = 0ULL;
 
 Agent::Agent(int state_size, int action_size, int random_seed )
 : actor_local(std::make_shared<Actor>(state_size, action_size, random_seed)),
+actor_local_gpu(std::make_shared<Actor>(state_size, action_size, random_seed)),
 actor_target(std::make_shared<Actor>(state_size, action_size, random_seed)),
 actor_optimizer(actor_local->parameters(), /*lr=*/LR_ACTOR),
 critic_local(std::make_shared<Critic>(state_size, action_size, random_seed)),
@@ -47,9 +48,10 @@ device(torch::kCPU)
 
 //  Actor Network (w/ Target Network)
     auto actorLk = std::unique_lock(mActor);
-    actor_local->to(device);
-    actor_target->to(device);
     hard_copy_weights(actor_target, actor_local);
+    hard_copy_weights(actor_local_gpu, actor_local);
+    actor_target->to(device);
+    actor_local_gpu->to(device);
     actorLk.unlock();
 
 //  Critic Network (w/ Target Network)
@@ -72,13 +74,23 @@ void Agent::hard_copy_weights( std::shared_ptr<torch::nn::Module> local, std::sh
     }
 }
 
+int count = 0;
+auto start = std::chrono::high_resolution_clock::now();
 void Agent::act(const Observation& state, Action& actionOutput) {
-    torch::Tensor torchState = torch::tensor(torch::ArrayRef(state.array)).to(device);
+    torch::Tensor torchState = torch::tensor(torch::ArrayRef(state.array));
 
     auto actorLk = std::unique_lock(mActor);
     actor_local->eval();
+	start = std::chrono::high_resolution_clock::now();
     torch::NoGradGuard guard;
-    auto action = actor_local->forward(torchState).to(torch::kCPU);
+    auto action = actor_local->forward(torchState);
+    
+    {
+        static float avg = 0.f;
+        avg = .99 * avg + .01 * std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+        if (count++ % 1000 == 0 && false)
+            SuperSonicML::Share::cvarManager->log(std::to_string((int)avg)+std::string("µs"));
+    }
     actor_local->train();
     actorLk.unlock();
     std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
@@ -92,9 +104,9 @@ void Agent::act(const Observation& state, Action& actionOutput) {
     
     static auto lastMsg = std::chrono::system_clock::now();
     auto now = std::chrono::system_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - lastMsg).count();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(now - lastMsg).count() / 1000000.f;
 
-    if (elapsed >= 2) {
+    if (elapsed >= 2.f) {
         char buf[200];
         sprintf_s(buf, "%d tps | %d lps", (int)(actCount / elapsed), (int)(learnCount / elapsed));
         SuperSonicML::Share::cvarManager->log(buf);
@@ -124,7 +136,6 @@ void Agent::learn() {
 //    Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
 
     auto& [state, action, reward, nextState, done] = memory.sample(BATCH_SIZE, device);
-
 // ---------------------------- update critic ---------------------------- #
 
     auto actions_next = actor_target->forward(nextState);
@@ -140,9 +151,7 @@ void Agent::learn() {
 
     critic_optimizer.step();
 
-    auto actorLk = std::unique_lock(mActor);
-    auto actions_pred = actor_local->forward(state);
-    actorLk.unlock();
+    auto actions_pred = actor_local_gpu->forward(state);
 
     criticLk.lock();
     soft_update(critic_local, critic_target, TAU);
@@ -157,9 +166,12 @@ void Agent::learn() {
     actor_optimizer.step();
 
 // ----------------------- update target networks ----------------------- #
-    actorLk.lock();
+    soft_update(actor_local_gpu, actor_target, TAU);
+    actor_target->to(torch::kCPU);
+    auto actorLk = std::unique_lock(mActor);
     soft_update(actor_local, actor_target, TAU);
     actorLk.unlock();
+    actor_target->to(device);
 
     learnCount += BATCH_SIZE;
 }
