@@ -5,6 +5,8 @@
 #include <thread>
 
 
+constexpr bool ENABLE_LEARNING = true;
+
 
 void trainEnvironment(Environment* env, Agent& agent) {
 	env->reset();
@@ -37,12 +39,14 @@ void learnLoop(Environment* env, Agent* agent) {
 std::thread learnThread;
 void mainML(Environment* env) {
 	Agent agent = Agent(Observation::size, Action::size, 1);
-	learnThread = std::thread(learnLoop, env, &agent);
+	if (ENABLE_LEARNING)
+		learnThread = std::thread(learnLoop, env, &agent);
 
 	env->observe();
 	while (!env->stopThread)
 		trainEnvironment(env, agent);
 	
-	learnThread.join();
+	if (ENABLE_LEARNING)
+		learnThread.join();
 }
 

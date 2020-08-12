@@ -115,6 +115,7 @@ void Agent::addExperienceState(Observation& state, Action& action, float reward,
 }
 
 void Agent::learn() {
+    memory.flushBuffer();
     if (memory.getLength() < std::min(BATCH_SIZE, memory.maxSize)) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         return;
