@@ -7,12 +7,12 @@
 
 class Action {
 public:
-	static const int size = 2;
+	static const int size = 1;
 	union {
 		std::array<float, size> array;
 		struct {
 			float steer;
-			float throttle;
+			//float throttle;
 			//float boost;
 			//float handbrake;
 		} named;

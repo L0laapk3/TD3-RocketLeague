@@ -19,8 +19,6 @@ ipch/
 
 build/
 
-bakkes_patchplugin.py
-
 # Prerequisites
 *.d
 

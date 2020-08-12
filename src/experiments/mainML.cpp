@@ -28,10 +28,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
 			break;
 	}
 	float distance = env->reward * 10000.f;
-	if (avgLastDistance == 0.f)
-		avgLastDistance = distance;
-	else
-		avgLastDistance = .99f * avgLastDistance + .01f * distance;
+	avgLastDistance = .95f * avgLastDistance + .05f * distance;
 
 	
     static auto lastMsg = std::chrono::system_clock::now();
