@@ -13,6 +13,7 @@ ReplayBuffer::~ReplayBuffer() {
 }
 
 
+
 void ReplayBuffer::addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done) {
 	addExperienceState(Experience{state.array, action.array, reward, nextState.array, done ? 1.f : 0.f});
 }

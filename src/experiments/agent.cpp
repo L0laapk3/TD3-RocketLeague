@@ -109,8 +109,8 @@ void Agent::reset() {
 }
 
 void Agent::addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done) {
-
-    memory.addExperienceState(state, action, reward, nextState, done);
+    if (*SuperSonicML::Share::cvarEnableTraining)
+        memory.addExperienceState(state, action, reward, nextState, done);
     // Learn, if enough samples are available in memory
 }
 

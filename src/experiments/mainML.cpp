@@ -5,9 +5,6 @@
 #include <thread>
 
 
-constexpr bool ENABLE_LEARNING = true;
-
-
 void trainEnvironment(Environment* env, Agent& agent) {
 	env->reset();
 	env->observe();
@@ -32,21 +29,23 @@ void trainEnvironment(Environment* env, Agent& agent) {
 
 void learnLoop(Environment* env, Agent* agent) {
 	while (!env->stopThread)
-		agent->learn();
+		if (*SuperSonicML::Share::cvarEnableTraining)
+			agent->learn();
+		else
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 }
 
 
 std::thread learnThread;
 void mainML(Environment* env) {
 	Agent agent = Agent(Observation::size, Action::size, 1);
-	if (ENABLE_LEARNING)
-		learnThread = std::thread(learnLoop, env, &agent);
+	learnThread = std::thread(learnLoop, env, &agent);
 
 	env->observe();
 	while (!env->stopThread)
 		trainEnvironment(env, agent);
 	
-	if (ENABLE_LEARNING)
-		learnThread.join();
+	learnThread.join();
 }
 
