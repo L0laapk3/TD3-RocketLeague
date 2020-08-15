@@ -34,7 +34,6 @@ public:
 
 	std::mutex mActor;
     Actor actor_local;
-    Actor actor_local_cpu;
     Actor actor_target;
     torch::optim::Adam actor_optimizer;
 

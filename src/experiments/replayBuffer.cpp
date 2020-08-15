@@ -49,9 +49,10 @@ Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
 	auto dones = torch::empty({batchSize}, torch::kFloat);
 
 	static auto rand = std::mt19937{std::random_device{}()};
-    static std::uniform_int_distribution<size_t> dist(0, getLength() - 1);
+	std::uniform_int_distribution<size_t> halfDist(0, index);
+    static std::uniform_int_distribution<size_t> dist(0, maxSize);
 	for(size_t i = 0; i < batchSize; i++) {
-		Experience sample = (*circularBuffer)[dist(rand)];
+		Experience sample = (*circularBuffer)[full ? dist(rand) : halfDist(rand)];
 		for (int j = 0; j < Observation::size; j++) {
 			float s = sample.state[j];
 			states[i][j] = s;

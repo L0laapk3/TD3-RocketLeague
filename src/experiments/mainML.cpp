@@ -21,6 +21,10 @@ void trainEnvironment(Environment* env, Agent& agent) {
 		actCount++;
 		auto oldObservation = env->observation;
 		env->step();
+		if (i % 16 == 0) {
+			agent.learn();
+			learnCount += 64;
+		}
 		env->observe();
 		stepped = true;
 		totalReward += env->reward;
@@ -38,7 +42,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
     if (elapsed >= 2.f) {
         char buf[200];
 		
-        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), agent.actor_local_cpu.toString().c_str());
+        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), agent.actor_local.toString().c_str());
         SuperSonicML::Share::cvarManager->log(buf);
         lastMsg = now;
         actCount = 0;
@@ -51,11 +55,12 @@ void trainEnvironment(Environment* env, Agent& agent) {
 
 
 void learnLoop(Environment* env, Agent* agent) {
+	return;
 	while (!env->stopThread) {
 		if (!*SuperSonicML::Share::cvarEnableTraining || !stepped)
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		else {
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			agent->learn();
 			learnCount += 512;
 			stepped = false;

@@ -8,7 +8,6 @@
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_cpu.dll</imagePath>
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_global_deps.dll</imagePath>
 	<manualMapFlags>0</manualMapFlags>
-	<procName>RocketLeague.exe</procName>
 	<hijack>0</hijack>
 	<unlink>0</unlink>
 	<erasePE>0</erasePE>

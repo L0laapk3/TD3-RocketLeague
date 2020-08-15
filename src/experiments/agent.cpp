@@ -8,11 +8,11 @@
 
 constexpr bool ALLOW_GPU = false;
 
-constexpr size_t BATCH_SIZE = 512;        // minibatch size
+constexpr size_t BATCH_SIZE = 64;        // minibatch size
 constexpr double GAMMA = 0.99;            // discount factor
 constexpr double TAU = 1e-3;              // for soft update of target parameters
 constexpr double LR_ACTOR = 1e-4;         // learning rate of the actor
-constexpr double LR_CRITIC = 1e-4;//1e-3  // learning rate of the critic
+constexpr double LR_CRITIC = 1e-3;//1e-3  // learning rate of the critic
 constexpr double WEIGHT_DECAY = 0;        // L2 weight decay
 constexpr bool   ADD_NOISE = true;
 
@@ -22,7 +22,7 @@ Agent::Agent() :
     device(ALLOW_GPU && torch::cuda::is_available() ? torch::kCUDA : torch::kCPU),
 
     actor_local(device),
-    actor_local_cpu(actor_local, torch::Device(torch::kCPU)),
+    //actor_local_cpu(actor_local, torch::Device(torch::kCPU)),
     actor_target(actor_local, device),
     actor_optimizer(actor_local.parameters(), /*lr=*/LR_ACTOR),
 
@@ -38,10 +38,10 @@ void Agent::act(const Observation& state, Action& actionOutput) {
     torch::Tensor torchState = torch::tensor(torch::ArrayRef(state.array));
 
     auto actorLk = std::unique_lock(mActor);
-    actor_local_cpu.eval();
+    actor_local.eval();
     torch::NoGradGuard guard;
-    auto action = actor_local_cpu.forward(torchState);
-    actor_local_cpu.train();
+    auto action = actor_local.forward(torchState);
+    actor_local.train();
     actorLk.unlock();
     std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
     if (ADD_NOISE)
@@ -70,8 +70,8 @@ void Agent::learn() {
 //    Update policy and value parameters using given batch of experience tuples.
 //    Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
 
-    SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
     auto& [state, action, reward, nextState, done] = memory.sample(BATCH_SIZE, device);
+    //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
 // ---------------------------- update critic ---------------------------- #
 
     auto actions_next = actor_target.forward(nextState);
@@ -88,25 +88,25 @@ void Agent::learn() {
 
 // ---------------------------- update actor ---------------------------- #
 
+    auto actorLk = std::unique_lock(mActor);
     auto actions_pred = actor_local.forward(state);
     criticLk.lock();
     soft_update(critic_local, critic_target, TAU); // still belongs to update critic but moved to fall in lock
     auto actor_loss = -critic_local.forward(state, actions_pred).mean();
-    SuperSonicML::Share::cvarManager->log("loss: " + std::to_string(actor_loss.item<float>()));
     criticLk.unlock();
+    //SuperSonicML::Share::cvarManager->log("loss"+std::to_string(actor_loss.item<float>()));
 
     actor_optimizer.zero_grad();
     actor_loss.backward();
     actor_optimizer.step();
-    SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
 
 // ----------------------- update target networks ----------------------- #
     soft_update(actor_local, actor_target, TAU);
-    actor_target.to(torch::kCPU);
-    auto actorLk = std::unique_lock(mActor);
-    soft_update(actor_local_cpu, actor_target, TAU);
+    //actor_local_cpu.copy_(actor_local);
     actorLk.unlock();
-    actor_target.to(device);
+    
+    //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
+    //SuperSonicML::Share::cvarManager->log(actor_local_cpu.toString().c_str());
 
     static int learnCount = 0;
     if (++learnCount % 1000 == 0)
@@ -125,6 +125,7 @@ void Agent::soft_update(torch::nn::Module& local, torch::nn::Module& target, dou
 static const std::string basePath = "C:/Users/Kris/Documents/coding/RLBot/ML/SuperSonicML/";
 void Agent::saveCheckPoints(int eps)
 {
+    return;
     auto fileActor (basePath + "checkpoints/ckp_actor_agent" + std::to_string(numOfThisAgent) +"_" + std::to_string(eps) + ".pt");
     auto fileCritic(basePath + "checkpoints/ckp_critic_agent"+ std::to_string(numOfThisAgent) +"_" + std::to_string(eps) + ".pt");
     SuperSonicML::Share::cvarManager->log(fileActor);
