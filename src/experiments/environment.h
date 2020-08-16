@@ -31,7 +31,7 @@ private:
 public:
 	Environment();
 	virtual ~Environment();
-	virtual void process(const BotInputData& input, ControllerInput& output, CarWrapper* car);
+	virtual void process(const BotInputData& input, ControllerInput& output, CarWrapper* car, BallWrapper* ball);
 
 	// above this line: internal and SuperSonicML definitions
 	// ----------------------------------------------------------- //

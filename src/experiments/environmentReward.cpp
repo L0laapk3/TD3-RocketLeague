@@ -14,17 +14,12 @@ void Environment::computeReward(const BotInputData& input) {
 	
 	reward = -distance / 10000.f;
 	//SuperSonicML::Share::cvarManager->log(std::to_string(distance));
-	done = distance < 100.f;
+	done = distance < 100.f;// || input.car.pos[2] > 100.f;
 }
 
 
 
 void Environment::reset() {
-	static std::random_device rd;
-	static std::mt19937 e2(rd());
-	static std::uniform_real_distribution<float> xRand(-3000.f, 3000.f);
-	static std::uniform_real_distribution<float> yRand(-4000.f, 4000.f);
-	target = vec3c{xRand(e2), yRand(e2), 17.f};
 	
 	//SuperSonicML::Share::cvarManager->log(std::string("NEW TARGET ")+std::to_string(target[0])+"\t, "+std::to_string(target[1]));
 

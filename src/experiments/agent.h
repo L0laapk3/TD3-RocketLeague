@@ -11,7 +11,7 @@ class Agent {
 private:
     //std::string getExecutablePath();
 
-    void soft_update(torch::nn::Module& local, torch::nn::Module& target, double tau);
+    void softUpdate(torch::nn::Module& local, torch::nn::Module& target, double tau);
 
     OUNoise noise;
     torch::Device device; 
@@ -33,14 +33,14 @@ public:
     void loadCheckPoints(int e);
 
 	std::mutex mActor;
-    Actor actor_local;
-    Actor actor_target;
-    torch::optim::Adam actor_optimizer;
+    Actor actorLocal;
+    Actor actorTarget;
+    torch::optim::Adam actorOptimizer;
 
 	std::mutex mCritic;
-    Critic critic_local;
-    Critic critic_target;
-    torch::optim::Adam critic_optimizer;
+    Critic criticLocal;
+    Critic criticTarget;
+    torch::optim::Adam criticOptimizer;
 
 };
 

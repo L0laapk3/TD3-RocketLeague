@@ -15,7 +15,7 @@ ReplayBuffer::~ReplayBuffer() {
 
 
 void ReplayBuffer::addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done) {
-	addExperienceState(Experience{state.array, action.array, reward, nextState.array, done ? 1.f : 0.f});
+	addExperienceState(Experience{state.array, action.array, reward, nextState.array});
 }
 
 void ReplayBuffer::addExperienceState(Experience experience) {
@@ -44,9 +44,8 @@ void ReplayBuffer::flushBuffer() {
 Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
 	auto states = torch::empty({batchSize, Observation::size}, torch::kFloat);
 	auto actions = torch::empty({batchSize, Action::size}, torch::kFloat);
-	auto rewards = torch::empty({batchSize}, torch::kFloat);
+	auto rewards = torch::empty({batchSize, 1}, torch::kFloat);
 	auto nextStates = torch::empty({batchSize, Observation::size}, torch::kFloat);
-	auto dones = torch::empty({batchSize}, torch::kFloat);
 
 	static auto rand = std::mt19937{std::random_device{}()};
 	std::uniform_int_distribution<size_t> halfDist(0, index);
@@ -55,16 +54,14 @@ Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
 		Experience sample = (*circularBuffer)[full ? dist(rand) : halfDist(rand)];
     	states[i] = torch::from_blob((void*)sample.state.data(), {Observation::size}, at::kFloat);
     	actions[i] = torch::from_blob((void*)sample.action.data(), {Action::size}, at::kFloat);
-		rewards[i] = sample.reward;
+		rewards[i][0] = sample.reward;
     	nextStates[i] = torch::from_blob((void*)sample.nextState.data(), {Observation::size}, at::kFloat);
-		dones[i] = sample.done;
 	}
 
 	return {
 		states.to(device, false, true),
 		actions.to(device, false, true),
-		rewards.to(device),
+		rewards.to(device, false, true),
 		nextStates.to(device, false, true),
-		dones.to(device),
 	};
 }

@@ -18,7 +18,7 @@ Environment::~Environment() {
 	mainMLThread.join();
 }
 
-void Environment::process(const BotInputData& input, ControllerInput& output, CarWrapper* car) {
+void Environment::process(const BotInputData& input, ControllerInput& output, CarWrapper* car, BallWrapper* ball) {
 	auto observeLk = std::unique_lock<std::mutex>(mObserve);
 	observation.readBotInput(input, target);
 	computeReward(input);
@@ -38,7 +38,15 @@ void Environment::process(const BotInputData& input, ControllerInput& output, Ca
 		static std::mt19937 e2(rd());
 		static std::uniform_real_distribution<float> xRand(-3000.f, 3000.f);
 		static std::uniform_real_distribution<float> yRand(-4000.f, 4000.f);
+		static std::uniform_real_distribution<float> yawRand(0.f, 6.28318f);
 		car->SetLocation(Vector(xRand(e2), yRand(e2), 17.f));
+		car->SetRotation(Rotator(0, yawRand(e2), 0));
+		car->SetVelocity(Vector(0, 0, 0));
+		car->SetAngularVelocity(Vector(0, 0, 0), false);
+		target = vec3c{xRand(e2), yRand(e2), 17.f};
+		ball->SetLocation(Vector(target[0], target[1], target[2]));
+		ball->SetVelocity(Vector(0, 0, 0));
+		ball->SetAngularVelocity(Vector(0, 0, 0), false);
 	}
 }
 

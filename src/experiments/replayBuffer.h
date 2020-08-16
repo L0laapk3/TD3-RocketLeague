@@ -12,14 +12,12 @@ struct Experience {
     std::array<float, Action::size> action;
     float reward;
     std::array<float, Observation::size> nextState;
-    float done;
 };
 struct Batch {
     torch::Tensor state;
     torch::Tensor action;
     torch::Tensor reward;
     torch::Tensor nextState;
-    torch::Tensor done;
 };
 
 class ReplayBuffer {

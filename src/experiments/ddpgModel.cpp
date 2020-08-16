@@ -17,7 +17,7 @@ void initLayer(torch::nn::Linear& fc) {
 /******************* ACTOR *******************/
 
 Actor::Actor() : torch::nn::Module() {
-    torch::manual_seed(1);
+    //torch::manual_seed(1);
     fc1 = register_module("fc1", torch::nn::Linear(Observation::size, fc1_units));//fc1_units));
     fc2 = register_module("fc2", torch::nn::Linear(fc1_units, fc2_units));
     fc3 = register_module("fc3", torch::nn::Linear(fc2_units, Action::size));
@@ -25,7 +25,7 @@ Actor::Actor() : torch::nn::Module() {
 }
 
 Actor::Actor(torch::Device device) : Actor() {
-    //reset_parameters();
+    reset_parameters();
     this->to(device);
 }
 Actor::Actor(const Actor& actor, torch::Device device) : Actor() {
@@ -72,7 +72,7 @@ std::string Actor::toString() {
 
 
 Critic::Critic() : torch::nn::Module() {
-    torch::manual_seed(1);
+    //torch::manual_seed(1);
     fcs1 = register_module("fcs1", torch::nn::Linear(Observation::size, fcs1_units));//fcs1_units));
     fc2 = register_module("fc2", torch::nn::Linear(fcs1_units + Action::size, fc2_units));
     fc3 = register_module("fc3", torch::nn::Linear(fc2_units, 1));
@@ -80,7 +80,7 @@ Critic::Critic() : torch::nn::Module() {
 }
 
 Critic::Critic(torch::Device device) : Critic() {
-    //reset_parameters();
+    reset_parameters();
     this->to(device);
 }
 Critic::Critic(const Critic& critic, torch::Device device) : Critic() {

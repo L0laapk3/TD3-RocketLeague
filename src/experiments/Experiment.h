@@ -7,5 +7,5 @@ class Experiment {
 public:
 	Experiment() { }
 	virtual ~Experiment() { };
-	virtual void process(const BotInputData& input, ControllerInput& output, CarWrapper* car) { };
+	virtual void process(const BotInputData& input, ControllerInput& output, CarWrapper* car, BallWrapper* ball) { };
 };

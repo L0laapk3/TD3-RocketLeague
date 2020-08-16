@@ -85,7 +85,7 @@ namespace SuperSonicML::Hooks {
 			if (currentExperiment == nullptr)
 				currentExperiment = new Environment();
 			memset(&vehicleInput->NewInput, 0, sizeof(ControllerInput));
-			currentExperiment->process(botInputData, vehicleInput->NewInput, &myCar);
+			currentExperiment->process(botInputData, vehicleInput->NewInput, &myCar, &ball);
 
 			static std::once_flag onceFlag;
 

@@ -21,14 +21,14 @@ int Agent::totalNumberOfAgents = 0;
 Agent::Agent() :
     device(ALLOW_GPU && torch::cuda::is_available() ? torch::kCUDA : torch::kCPU),
 
-    actor_local(device),
-    //actor_local_cpu(actor_local, torch::Device(torch::kCPU)),
-    actor_target(actor_local, device),
-    actor_optimizer(actor_local.parameters(), /*lr=*/LR_ACTOR),
+    actorLocal(device),
+    //actor_local_cpu(actorLocal, torch::Device(torch::kCPU)),
+    actorTarget(actorLocal, device),
+    actorOptimizer(actorLocal.parameters(), /*lr=*/LR_ACTOR),
 
-    critic_local(device),
-    critic_target(critic_local, device),
-    critic_optimizer(critic_local.parameters(), /*lr=*/LR_CRITIC),
+    criticLocal(device),
+    criticTarget(criticLocal, device),
+    criticOptimizer(criticLocal.parameters(), /*lr=*/LR_CRITIC),
 
     noise()
     { }
@@ -48,10 +48,10 @@ void Agent::act(const Observation& state, Action& actionOutput) {
     // SuperSonicML::Share::cvarManager->log(buf);
 	
     //auto actorLk = std::unique_lock(mActor);
-    actor_local.eval();
+    actorLocal.eval();
     torch::NoGradGuard guard;
-    auto action = actor_local.forward(torchState);
-    actor_local.train();
+    auto action = actorLocal.forward(torchState);
+    actorLocal.train();
     //actorLk.unlock();
     if (ADD_NOISE) {
         std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
@@ -79,55 +79,62 @@ void Agent::learn() {
         return;
     }
 //    Update policy and value parameters using given batch of experience tuples.
-//    Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
+//    QTargets = r + γ * criticTarget(next_state, actorTarget(next_state))
 
-    auto& [state, action, reward, nextState, done] = memory.sample(1, device);
+    auto& [state, action, reward, nextState] = memory.sample(BATCH_SIZE, device);
 
 
     // char buf[200];
     // sprintf_s(buf, "learn %d %d %d %f.5 %f.5 %f.5", state.dim(), state.sizes()[0], state.sizes()[1], state.accessor<float,2>()[0][0], state.accessor<float,2>()[0][1], state.accessor<float,2>()[0][2]);//, action.accessor<float,2>()[0][2]);
     // SuperSonicML::Share::cvarManager->log(buf);
 
-    //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
+    //SuperSonicML::Share::cvarManager->log(actorLocal.toString().c_str());
 // ---------------------------- update critic ---------------------------- #
 
-    auto actions_next = actor_target.forward(nextState);
-    auto Q_targets_next = critic_target.forward(nextState, actions_next);
-    auto Q_targets = reward + (GAMMA * Q_targets_next * (1 - done));
+    auto actionsNext = actorTarget.forward(nextState);
+
+    auto QTargetsNext = criticTarget.forward(nextState, actionsNext);
+
+
+    auto QTargets = reward + (GAMMA * QTargetsNext);
     //auto criticLk = std::unique_lock(mCritic);
-    auto Q_expected = critic_local.forward(state, action); 
+    auto QExpected = criticLocal.forward(state, action); 
     //criticLk.unlock();
 
-    torch::Tensor critic_loss = torch::mse_loss(Q_expected, Q_targets.detach());
-    //SuperSonicML::Share::cvarManager->log("loss "+std::to_string(critic_loss.item<float>()));
-    critic_optimizer.zero_grad();
-    critic_loss.backward();
+    torch::Tensor criticLoss = torch::mse_loss(QExpected, QTargets.detach());
+    
+    // char buf[200];
+    // sprintf_s(buf, "cLoss %d %d %.5f  %d %d %d  %d %d %d", criticLoss.dim(), criticLoss.sizes()[0], criticLoss.item<float>(), QExpected.dim(), QExpected.sizes()[0], QExpected.sizes()[1], QTargets.dim(), QTargets.sizes()[0], QTargets.sizes()[1]);
+    // SuperSonicML::Share::cvarManager->log(buf);
+    //SuperSonicML::Share::cvarManager->log("critic loss "+std::to_string(criticLoss.item<float>()));
+    criticOptimizer.zero_grad();
+    criticLoss.backward();
     //criticLk.lock();
-    //SuperSonicML::Share::cvarManager->log("critic "+critic_local.toString());
-    critic_optimizer.step();
-    //SuperSonicML::Share::cvarManager->log("critic "+critic_local.toString());
-    soft_update(critic_local, critic_target, TAU); // still belongs to update critic but moved to fall in lock
+    //SuperSonicML::Share::cvarManager->log("critic "+criticLocal.toString());
+    criticOptimizer.step();
+    //SuperSonicML::Share::cvarManager->log("critic "+criticLocal.toString());
+    softUpdate(criticLocal, criticTarget, TAU); // still belongs to update critic but moved to fall in lock
 
 // ---------------------------- update actor ---------------------------- #
 
     auto actorLk = std::unique_lock(mActor);
-    auto actions_pred = actor_local.forward(state);
+    auto actionsPred = actorLocal.forward(state);
 
-    auto actor_loss = -critic_local.forward(state, actions_pred).mean();
+    auto actorLoss = -criticLocal.forward(state, actionsPred).mean();
     //criticLk.unlock();
 
-    actor_optimizer.zero_grad();
-    actor_loss.backward();
-    //SuperSonicML::Share::cvarManager->log("actor "+actor_local.toString());
-    actor_optimizer.step();
-   // SuperSonicML::Share::cvarManager->log("actor "+actor_local.toString());
+    actorOptimizer.zero_grad();
+    actorLoss.backward();
+    //SuperSonicML::Share::cvarManager->log("actor "+actorLocal.toString());
+    actorOptimizer.step();
+   // SuperSonicML::Share::cvarManager->log("actor "+actorLocal.toString());
 
 // ----------------------- update target networks ----------------------- #
-    soft_update(actor_local, actor_target, TAU);
-    //actor_local_cpu.copy_(actor_local);
+    softUpdate(actorLocal, actorTarget, TAU);
+    //actor_local_cpu.copy_(actorLocal);
     //actorLk.unlock();
     
-    //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
+    //SuperSonicML::Share::cvarManager->log(actorLocal.toString().c_str());
     //SuperSonicML::Share::cvarManager->log(actor_local_cpu.toString().c_str());
 
     static int learnCount = 0;
@@ -135,7 +142,7 @@ void Agent::learn() {
         saveCheckPoints(learnCount);
 }
 
-void Agent::soft_update(torch::nn::Module& local, torch::nn::Module& target, double tau)
+void Agent::softUpdate(torch::nn::Module& local, torch::nn::Module& target, double tau)
 {
 //    Soft update model parameters.
 //    θ_target = τ*θ_local + (1 - τ)*θ_target
@@ -154,7 +161,7 @@ void Agent::saveCheckPoints(int eps)
     auto actorLk = std::unique_lock(mActor);
     auto criticLk = std::unique_lock(mCritic);
     //actor_local_cpu.save(fileActor);
-    //critic_local.save(fileCritic);
+    //criticLocal.save(fileCritic);
 }
 
 void Agent::loadCheckPoints(int eps)
@@ -164,7 +171,7 @@ void Agent::loadCheckPoints(int eps)
     auto actorLk = std::unique_lock(mActor);
     auto criticLk = std::unique_lock(mCritic);
     //torch::load(actor_local_cpu, fileActor);
-    //torch::load(critic_local, fileCritic);
+    //torch::load(criticLocal, fileCritic);
 }
 
 // std::string Agent::getExecutablePath() 
