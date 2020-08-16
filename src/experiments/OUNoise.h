@@ -9,8 +9,8 @@ private:
     size_t size;
     std::vector<float> mu;
     std::vector<float> state;
-    float theta=0.15;//0.01;
-    float sigma=0.1;//0.5;
+    float theta=0.01;//0.15;
+    float sigma=0.5;//0.1;
 
 public:
     OUNoise () {

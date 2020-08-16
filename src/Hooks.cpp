@@ -85,7 +85,7 @@ namespace SuperSonicML::Hooks {
 			if (currentExperiment == nullptr)
 				currentExperiment = new Environment();
 			memset(&vehicleInput->NewInput, 0, sizeof(ControllerInput));
-			currentExperiment->process(botInputData, vehicleInput->NewInput);
+			currentExperiment->process(botInputData, vehicleInput->NewInput, &myCar);
 
 			static std::once_flag onceFlag;
 
@@ -101,6 +101,7 @@ namespace SuperSonicML::Hooks {
 			  //ball.SetMaxLinearSpeed(4000);
 			  //ball.SetMaxAngularSpeed(3);
 			});
+			/*
 
 			// Unstuck the car if its stuck
 			static std::deque<vec3c> carPosQueue;
@@ -177,7 +178,7 @@ namespace SuperSonicML::Hooks {
 					ball.SetLocation(Vector(rand() % 7000 - 3500, rand() % 7000 - 3500, ball.GetReplicatedBallScale() * 100 + rand() % 500));
 					ball.SetVelocity(Vector(rand() % 2000 - 1000, rand() % 2000 - 1000, rand() % 300));
 				}
-			}
+			}*/
 
 			/*auto alteredVel = ballData.vel;
 			if(alteredVel[2] > 0)

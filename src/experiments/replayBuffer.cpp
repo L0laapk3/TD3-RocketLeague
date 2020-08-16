@@ -53,22 +53,18 @@ Batch ReplayBuffer::sample(int batchSize, torch::Device& device) {
     static std::uniform_int_distribution<size_t> dist(0, maxSize);
 	for(size_t i = 0; i < batchSize; i++) {
 		Experience sample = (*circularBuffer)[full ? dist(rand) : halfDist(rand)];
-		for (int j = 0; j < Observation::size; j++) {
-			float s = sample.state[j];
-			states[i][j] = s;
-			nextStates[i][j] = sample.nextState[j];
-		}
-		for (int j = 0; j < Action::size; j++)
-			actions[i][j] = sample.action[j];
-		rewards[i] = torch::tensor(sample.reward, torch::dtype(torch::kFloat));
+    	states[i] = torch::from_blob((void*)sample.state.data(), {Observation::size}, at::kFloat);
+    	actions[i] = torch::from_blob((void*)sample.action.data(), {Action::size}, at::kFloat);
+		rewards[i] = sample.reward;
+    	nextStates[i] = torch::from_blob((void*)sample.nextState.data(), {Observation::size}, at::kFloat);
 		dones[i] = sample.done;
 	}
 
 	return {
-		states.to(device),
-		actions.to(device),
+		states.to(device, false, true),
+		actions.to(device, false, true),
 		rewards.to(device),
-		nextStates.to(device),
+		nextStates.to(device, false, true),
 		dones.to(device),
 	};
 }

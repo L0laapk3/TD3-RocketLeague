@@ -8,12 +8,12 @@
 
 constexpr bool ALLOW_GPU = false;
 
-constexpr size_t BATCH_SIZE = 64;        // minibatch size
-constexpr double GAMMA = 0.99;            // discount factor
-constexpr double TAU = 1e-3;              // for soft update of target parameters
-constexpr double LR_ACTOR = 1e-4;         // learning rate of the actor
-constexpr double LR_CRITIC = 1e-3;//1e-3  // learning rate of the critic
-constexpr double WEIGHT_DECAY = 0;        // L2 weight decay
+constexpr size_t BATCH_SIZE = 64;          // minibatch size
+constexpr double GAMMA = 0.99;             // discount factor
+constexpr double TAU = 1e-3;               // for soft update of target parameters
+constexpr double LR_CRITIC = 1e-3; //1e-3  // learning rate of the critic
+constexpr double LR_ACTOR =  1e-4; //1e-4  // learning rate of the actor
+constexpr double WEIGHT_DECAY = 0;         // L2 weight decay
 constexpr bool   ADD_NOISE = true;
 
 int Agent::totalNumberOfAgents = 0;
@@ -35,19 +35,30 @@ Agent::Agent() :
 
 
 void Agent::act(const Observation& state, Action& actionOutput) {
-    torch::Tensor torchState = torch::tensor(torch::ArrayRef(state.array));
 
-    auto actorLk = std::unique_lock(mActor);
+
+	
+    // char buf[200];
+    // sprintf_s(buf, "observe %.5f %.5f %.5f", state.array[0], state.array[1], state.array[2]);
+    // SuperSonicML::Share::cvarManager->log(buf);
+
+    torch::Tensor torchState = torch::from_blob((void*)state.array.data(), {state.size}, at::kFloat).clone();
+
+    // sprintf_s(buf, "act %d %d %.5f %.5f %.5f", torchState.dim(), torchState.sizes()[0], torchState.accessor<float,1>()[0], torchState.accessor<float,1>()[1], torchState.accessor<float,1>()[2]);
+    // SuperSonicML::Share::cvarManager->log(buf);
+	
+    //auto actorLk = std::unique_lock(mActor);
     actor_local.eval();
     torch::NoGradGuard guard;
     auto action = actor_local.forward(torchState);
     actor_local.train();
-    actorLk.unlock();
-    std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
-    if (ADD_NOISE)
+    //actorLk.unlock();
+    if (ADD_NOISE) {
+        std::vector<float> v(action.data<float>(), action.data<float>() + action.numel());
         noise.sample(v);
-    for (size_t i =0; i < v.size(); i++)
-        actionOutput[i] = std::fmin(std::fmax(v[i],-1.f), 1.f);
+        for (size_t i =0; i < v.size(); i++)
+            actionOutput[i] = std::fmin(std::fmax(v[i],-1.f), 1.f);
+    }
     
 }
 
@@ -63,47 +74,58 @@ void Agent::addExperienceState(Observation& state, Action& action, float reward,
 
 void Agent::learn() {
     memory.flushBuffer();
-    if (memory.getLength() < std::min(BATCH_SIZE, memory.maxSize)) {
+    if (memory.getLength() < (std::min)(BATCH_SIZE, memory.maxSize)) {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         return;
     }
 //    Update policy and value parameters using given batch of experience tuples.
 //    Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
 
-    auto& [state, action, reward, nextState, done] = memory.sample(BATCH_SIZE, device);
+    auto& [state, action, reward, nextState, done] = memory.sample(1, device);
+
+
+    // char buf[200];
+    // sprintf_s(buf, "learn %d %d %d %f.5 %f.5 %f.5", state.dim(), state.sizes()[0], state.sizes()[1], state.accessor<float,2>()[0][0], state.accessor<float,2>()[0][1], state.accessor<float,2>()[0][2]);//, action.accessor<float,2>()[0][2]);
+    // SuperSonicML::Share::cvarManager->log(buf);
+
     //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
 // ---------------------------- update critic ---------------------------- #
 
     auto actions_next = actor_target.forward(nextState);
     auto Q_targets_next = critic_target.forward(nextState, actions_next);
     auto Q_targets = reward + (GAMMA * Q_targets_next * (1 - done));
-    auto criticLk = std::unique_lock(mCritic);
+    //auto criticLk = std::unique_lock(mCritic);
     auto Q_expected = critic_local.forward(state, action); 
-    criticLk.unlock();
+    //criticLk.unlock();
 
     torch::Tensor critic_loss = torch::mse_loss(Q_expected, Q_targets.detach());
+    //SuperSonicML::Share::cvarManager->log("loss "+std::to_string(critic_loss.item<float>()));
     critic_optimizer.zero_grad();
     critic_loss.backward();
+    //criticLk.lock();
+    //SuperSonicML::Share::cvarManager->log("critic "+critic_local.toString());
     critic_optimizer.step();
+    //SuperSonicML::Share::cvarManager->log("critic "+critic_local.toString());
+    soft_update(critic_local, critic_target, TAU); // still belongs to update critic but moved to fall in lock
 
 // ---------------------------- update actor ---------------------------- #
 
     auto actorLk = std::unique_lock(mActor);
     auto actions_pred = actor_local.forward(state);
-    criticLk.lock();
-    soft_update(critic_local, critic_target, TAU); // still belongs to update critic but moved to fall in lock
+
     auto actor_loss = -critic_local.forward(state, actions_pred).mean();
-    criticLk.unlock();
-    //SuperSonicML::Share::cvarManager->log("loss"+std::to_string(actor_loss.item<float>()));
+    //criticLk.unlock();
 
     actor_optimizer.zero_grad();
     actor_loss.backward();
+    //SuperSonicML::Share::cvarManager->log("actor "+actor_local.toString());
     actor_optimizer.step();
+   // SuperSonicML::Share::cvarManager->log("actor "+actor_local.toString());
 
 // ----------------------- update target networks ----------------------- #
     soft_update(actor_local, actor_target, TAU);
     //actor_local_cpu.copy_(actor_local);
-    actorLk.unlock();
+    //actorLk.unlock();
     
     //SuperSonicML::Share::cvarManager->log(actor_local.toString().c_str());
     //SuperSonicML::Share::cvarManager->log(actor_local_cpu.toString().c_str());
@@ -117,7 +139,7 @@ void Agent::soft_update(torch::nn::Module& local, torch::nn::Module& target, dou
 {
 //    Soft update model parameters.
 //    θ_target = τ*θ_local + (1 - τ)*θ_target
-    torch::NoGradGuard no_grad;
+    torch::NoGradGuard guard;
     for (size_t i = 0; i < target.parameters().size(); i++)
         target.parameters()[i].copy_(tau * local.parameters()[i] + (1.0 - tau) * target.parameters()[i]);
 }

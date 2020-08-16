@@ -2,10 +2,10 @@
 #include "observation.h"
 
 #include "GameData.h"
+#include <algorithm>
 
 static auto scalePosition = [](vec3c pos) {
-	vec3c normed = {pos[0] / 4150, pos[1] / 6000, pos[2] / 2100};
-	return clip(normed, -1, 1);
+	return vec3c{pos[0] / 4150.f, pos[1] / 6000.f, pos[2] / 2100.f};
 };
 
 void Observation::readBotInput(const BotInputData& input, const vec3c& target) {

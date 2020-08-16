@@ -8,6 +8,7 @@
 #include <bots/BotClass.h>
 
 #include "observation.h"
+#include "GameData.h"
 #include "action.h"
 
 
@@ -23,12 +24,14 @@ private:
 	bool observationAvailable = false;
 	bool actionAvailable = false;
 
+	bool resetFlag = false;
+
 	void computeReward(const BotInputData& input);
 
 public:
 	Environment();
 	virtual ~Environment();
-	virtual void process(const BotInputData& input, ControllerInput& output);
+	virtual void process(const BotInputData& input, ControllerInput& output, CarWrapper* car);
 
 	// above this line: internal and SuperSonicML definitions
 	// ----------------------------------------------------------- //

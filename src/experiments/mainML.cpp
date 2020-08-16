@@ -33,7 +33,8 @@ void trainEnvironment(Environment* env, Agent& agent) {
 		if (env->done || env->stopThread)
 			break;
 	}
-
+	
+	SuperSonicML::Share::cvarManager->log("lastDist " + std::to_string((int)(env->reward * -10000.f)));
 	
     static auto lastMsg = std::chrono::system_clock::now();
     auto now = std::chrono::system_clock::now();
@@ -42,7 +43,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
     if (elapsed >= 2.f) {
         char buf[200];
 		
-        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), agent.actor_local.toString().c_str());
+        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %s %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), agent.actor_local.toString().c_str(), agent.critic_local.toString().c_str());
         SuperSonicML::Share::cvarManager->log(buf);
         lastMsg = now;
         actCount = 0;

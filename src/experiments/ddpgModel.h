@@ -18,10 +18,9 @@ public:
     torch::Tensor forward(torch::Tensor state);
     //torch::nn::BatchNormOptions bn_options(int64_t features);
 
-    void copy_(const Actor& actor);
     std::string toString();
 
-    torch::nn::Linear fc1{nullptr};//, fc2{nullptr}, fc3{nullptr};
+    torch::nn::Linear fc1{nullptr}, fc2{nullptr}, fc3{nullptr};
     //torch::nn::BatchNorm bn1{nullptr};
 };
 
@@ -42,6 +41,7 @@ public:
 
     torch::Tensor forward(torch::Tensor x, torch::Tensor action);
 
+    std::string toString();
 
     torch::nn::Linear fcs1{nullptr}, fc2{nullptr}, fc3{nullptr};
     //torch::nn::BatchNorm bn1{nullptr};
