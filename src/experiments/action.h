@@ -13,8 +13,8 @@ public:
 		struct {
 			float steer;
 			float throttle;
-			//float boost;
-			//float handbrake;
+			// float boost;
+			// float handbrake;
 		} named;
 	};
 	float& operator[] (const size_t i) { return array[i]; }

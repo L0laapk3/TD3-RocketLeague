@@ -29,9 +29,16 @@ Actor::Actor(torch::Device device) : Actor() {
     this->to(device);
 }
 Actor::Actor(const Actor& actor, torch::Device device) : Actor() {
-    for (size_t i = 0; i < actor.parameters().size(); i++)
-        parameters()[i] = actor.parameters()[i];
-    this->to(device);
+    this->copy_(actor, device);
+}
+
+void Actor::copy_(const Actor& actor, torch::Device device) {
+    fc1->weight = actor.fc1->weight.to(device, false, true);
+    fc1->bias = actor.fc1->bias.to(device, false, true);
+    fc2->weight = actor.fc2->weight.to(device, false, true);
+    fc2->bias = actor.fc2->bias.to(device, false, true);
+    fc3->weight = actor.fc3->weight.to(device, false, true);
+    fc3->bias = actor.fc3->bias.to(device, false, true);
 }
 
 void Actor::reset_parameters() {
@@ -47,7 +54,7 @@ torch::Tensor Actor::forward(torch::Tensor x)
     x = fc2->forward(x);
     x = torch::relu(x);
     x = fc3->forward(x);
-    x = torch::tanh(x);
+    x = torch::hardtanh(x);
     return x;
 
 }
@@ -84,9 +91,16 @@ Critic::Critic(torch::Device device) : Critic() {
     this->to(device);
 }
 Critic::Critic(const Critic& critic, torch::Device device) : Critic() {
-    for (size_t i = 0; i < critic.parameters().size(); i++)
-        parameters()[i] = critic.parameters()[i];
-    this->to(device);
+    this->copy_(critic, device);
+}
+
+void Critic::copy_(const Critic& critic, torch::Device device) {
+    fcs1->weight = critic.fcs1->weight.to(device, false, true);
+    fcs1->bias = critic.fcs1->bias.to(device, false, true);
+    fc2->weight = critic.fc2->weight.to(device, false, true);
+    fc2->bias = critic.fc2->bias.to(device, false, true);
+    fc3->weight = critic.fc3->weight.to(device, false, true);
+    fc3->bias = critic.fc3->bias.to(device, false, true);
 }
 
 void Critic::reset_parameters() {

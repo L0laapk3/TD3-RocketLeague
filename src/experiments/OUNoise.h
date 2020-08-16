@@ -11,12 +11,12 @@ private:
     std::vector<float> state;
     
     // aggressive
-    // float theta=0.15;
-    // float sigma=0.1;
+    float theta=0.15;
+    float sigma=0.1;
 
     // conservative/default
-    float theta=0.01;//0.15;
-    float sigma=0.5;//0.1;
+    // float theta=0.01;
+    // float sigma=0.5;
 
 public:
     OUNoise () {

@@ -13,6 +13,8 @@ public:
 
     Actor(torch::Device device);
     Actor(const Actor& actor, torch::Device device);
+    void copy_(const Actor& actor, torch::Device device);
+
     void reset_parameters();
 
     torch::Tensor forward(torch::Tensor state);
@@ -36,6 +38,7 @@ public:
 
     Critic(torch::Device device);
     Critic(const Critic& critic, torch::Device device);
+    void copy_(const Critic& critic, torch::Device device);
 
     void reset_parameters();
 

@@ -36,8 +36,8 @@ void Environment::process(const BotInputData& input, ControllerInput& output, Ca
 		resetFlag = false;
 		static std::random_device rd;
 		static std::mt19937 e2(rd());
-		static std::uniform_real_distribution<float> xRand(-3000.f, 3000.f);
-		static std::uniform_real_distribution<float> yRand(-4000.f, 4000.f);
+		static std::uniform_real_distribution<float> xRand(-4000.f, 4000.f);
+		static std::uniform_real_distribution<float> yRand(-5000.f, 5000.f);
 		static std::uniform_real_distribution<float> yawRand(0.f, 6.28318f);
 		car->SetLocation(Vector(xRand(e2), yRand(e2), 17.f));
 		car->SetRotation(Rotator(0, yawRand(e2), 0));
