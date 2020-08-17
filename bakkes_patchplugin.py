@@ -37,7 +37,7 @@ async def main_loop():
 			plugin_name = filename[0:filename.index('.')]
 			print("Copying " + filename + "")
 			await websocket.send("plugin unload " + plugin_name)
-			time.sleep(0.1)
+			time.sleep(0.4)
 			replace_plugin_file()
 			time.sleep(0.1)
 			await websocket.send("plugin load " + plugin_name)

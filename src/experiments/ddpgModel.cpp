@@ -28,17 +28,14 @@ Actor::Actor(torch::Device device) : Actor() {
     reset_parameters();
     this->to(device);
 }
-Actor::Actor(const Actor& actor, torch::Device device) : Actor() {
+Actor::Actor(std::shared_ptr<Actor> actor, torch::Device device) : Actor() {
+    this->to(device);
     this->copy_(actor, device);
 }
 
-void Actor::copy_(const Actor& actor, torch::Device device) {
-    fc1->weight = actor.fc1->weight.to(device, false, true);
-    fc1->bias = actor.fc1->bias.to(device, false, true);
-    fc2->weight = actor.fc2->weight.to(device, false, true);
-    fc2->bias = actor.fc2->bias.to(device, false, true);
-    fc3->weight = actor.fc3->weight.to(device, false, true);
-    fc3->bias = actor.fc3->bias.to(device, false, true);
+void Actor::copy_(std::shared_ptr<Actor> actor, torch::Device device) {
+    for (size_t i = 0; i < parameters().size(); i++)
+        parameters()[i].data().copy_(actor->parameters()[i].to(device, false, true).data());
 }
 
 void Actor::reset_parameters() {
@@ -54,7 +51,7 @@ torch::Tensor Actor::forward(torch::Tensor x)
     x = fc2->forward(x);
     x = torch::relu(x);
     x = fc3->forward(x);
-    x = torch::hardtanh(x);
+    x = torch::tanh(x);
     return x;
 
 }
@@ -73,6 +70,14 @@ std::string Actor::toString() {
 //     return bn_options;
 // }
 
+std::shared_ptr<Actor> Actor::load(std::string path, torch::Device device) {
+    struct privateConstructorPassTrough : public Actor {};
+    auto actor = (std::shared_ptr<Actor>)std::make_shared<privateConstructorPassTrough>();
+    torch::load(actor, path);
+    actor->to(device);
+    return actor;
+}
+
 
 
 /******************* Critic *****************/
@@ -90,17 +95,14 @@ Critic::Critic(torch::Device device) : Critic() {
     reset_parameters();
     this->to(device);
 }
-Critic::Critic(const Critic& critic, torch::Device device) : Critic() {
+Critic::Critic(std::shared_ptr<Critic> critic, torch::Device device) : Critic() {
+    this->to(device);
     this->copy_(critic, device);
 }
 
-void Critic::copy_(const Critic& critic, torch::Device device) {
-    fcs1->weight = critic.fcs1->weight.to(device, false, true);
-    fcs1->bias = critic.fcs1->bias.to(device, false, true);
-    fc2->weight = critic.fc2->weight.to(device, false, true);
-    fc2->bias = critic.fc2->bias.to(device, false, true);
-    fc3->weight = critic.fc3->weight.to(device, false, true);
-    fc3->bias = critic.fc3->bias.to(device, false, true);
+void Critic::copy_(std::shared_ptr<Critic> critic, torch::Device device) {
+    for (size_t i = 0; i < parameters().size(); i++)
+        parameters()[i].data().copy_(critic->parameters()[i].to(device, false, true).data());
 }
 
 void Critic::reset_parameters() {
@@ -132,3 +134,10 @@ torch::Tensor Critic::forward(torch::Tensor x, torch::Tensor action)
     return fc3->forward(x);
 }
 
+std::shared_ptr<Critic> Critic::load(std::string path, torch::Device device) {
+    struct privateConstructorPassTrough : public Critic {};
+    auto critic = (std::shared_ptr<Critic>)std::make_shared<privateConstructorPassTrough>();
+    torch::load(critic, path);
+    critic->to(device);
+    return critic;
+}

@@ -1,12 +1,12 @@
 <XenosConfig>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\asmjit.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\c10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\fbgemm.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiomp5md.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiompstubs5md.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_cpu.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\torch_global_deps.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\asmjit.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\c10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\fbgemm.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiomp5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiompstubs5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch_cpu.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch_global_deps.dll</imagePath>
 	<manualMapFlags>0</manualMapFlags>
 	<hijack>0</hijack>
 	<unlink>0</unlink>

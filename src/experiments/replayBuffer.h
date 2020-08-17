@@ -25,7 +25,7 @@ public:
     ReplayBuffer();
     ~ReplayBuffer();
 
-    static const size_t maxSize = 1 << 20; //1M
+    static const size_t maxSize = 1 << 23; //8M = 18 minutes of gameplay
     size_t getLength();
 
     void addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done);

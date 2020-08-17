@@ -10,11 +10,15 @@ private:
     std::vector<float> mu;
     std::vector<float> state;
     
-    // aggressive
-    float theta=0.15;
-    float sigma=0.1;
+    // fucking aggressive
+    float theta=0.01;
+    float sigma=0.5;
+    
+    // // aggressive
+    // float theta=0.15;
+    // float sigma=0.1;
 
-    // conservative/default
+    // // conservative/default
     // float theta=0.01;
     // float sigma=0.5;
 

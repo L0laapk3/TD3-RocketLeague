@@ -1,17 +1,17 @@
 <XenosConfig>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\asmjit.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\c10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\c10_cuda.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cublas64_10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cudart64_102.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cudnn64_7.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cufft64_10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cufftw64_10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\curand64_10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\cusparse64_10.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\fbgemm.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiomp5md.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\SuperSonicML\build\bin\Release\libiompstubs5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\asmjit.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\c10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\c10_cuda.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cublas64_10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cudart64_102.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cudnn64_7.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cufft64_10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cufftw64_10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\curand64_10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cusparse64_10.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\fbgemm.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiomp5md.dll</imagePath>
+	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiompstubs5md.dll</imagePath>
 	<manualMapFlags>0</manualMapFlags>
 	<procName>RocketLeague.exe</procName>
 	<hijack>0</hijack>

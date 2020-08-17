@@ -12,16 +12,16 @@ public:
 	Observation(const Observation& o) : array(o.array) {};
 	~Observation() {};
 
-	static const int size = 3;
+	static const int size = 7*3;
 	union {
 		std::array<float, size> array;
 		struct {
-			// vec3c carPos;
-			// vec3c carAng;
-			// vec3c carVel;
-			// vec3c carForward;
-			// vec3c carUp;
-			// vec3c targetPos;
+			vec3c carPos;
+			vec3c carAng;
+			vec3c carVel;
+			vec3c carForward;
+			vec3c carUp;
+			vec3c targetPos;
 			vec3c targetLocalPos;
 		} named;
 	};

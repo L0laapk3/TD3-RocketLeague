@@ -11,10 +11,11 @@ class Agent {
 private:
     //std::string getExecutablePath();
 
-    void softUpdate(torch::nn::Module& local, torch::nn::Module& target, double tau);
+    void softUpdate(std::shared_ptr<torch::nn::Module> local, std::shared_ptr<torch::nn::Module> target, float tau);
 
     OUNoise noise;
-    torch::Device device; 
+    torch::Device learnDevice;
+    torch::Device evalDevice;
     ReplayBuffer memory;
 
 
@@ -29,18 +30,20 @@ public:
     void reset();
     void learn();
 
-    void saveCheckPoints(int e);
-    void loadCheckPoints(int e);
+    void save();
+    void load();
 
 	std::mutex mActor;
-    Actor actorLocal;
-    Actor actorLocalAct;
-    Actor actorTarget;
-    torch::optim::Adam actorOptimizer;
-
 	std::mutex mCritic;
-    Critic criticLocal;
-    Critic criticTarget;
+    std::shared_ptr<Actor> actorLocal;
+    std::shared_ptr<Critic> criticLocal;
+
+    std::shared_ptr<Actor> actorLocalCPU;
+    std::shared_ptr<Actor> actorTarget;
+
+    std::shared_ptr<Critic> criticTarget;
+
+    torch::optim::Adam actorOptimizer;
     torch::optim::Adam criticOptimizer;
 
 };
