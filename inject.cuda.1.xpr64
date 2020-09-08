@@ -11,9 +11,9 @@
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\cusparse64_10.dll</imagePath>
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\fbgemm.dll</imagePath>
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiomp5md.dll</imagePath>
-	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\libiompstubs5md.dll</imagePath>
+	<imagePath>C:\Program Files (x86)\Steam\steamapps\common\rocketleague\Binaries\Win64\bakkesmod\dll\bakkesmod.dll</imagePath>
 	<manualMapFlags>0</manualMapFlags>
-	<procName>RocketLeague.exe</procName>
+	<procName>RocketLeague.exe.unpacked.exe</procName>
 	<hijack>0</hijack>
 	<unlink>0</unlink>
 	<erasePE>0</erasePE>

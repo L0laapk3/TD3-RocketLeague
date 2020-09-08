@@ -7,6 +7,7 @@
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch.dll</imagePath>
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch_cpu.dll</imagePath>
 	<imagePath>C:\Users\Kris\Documents\coding\RLBot\ML\DDPG-RocketLeague\build\bin\Release\torch_global_deps.dll</imagePath>
+	<imagePath>C:\Program Files (x86)\Steam\steamapps\common\rocketleague\Binaries\Win64\bakkesmod\dll\bakkesmod.dll</imagePath>
 	<manualMapFlags>0</manualMapFlags>
 	<hijack>0</hijack>
 	<unlink>0</unlink>

@@ -91,6 +91,8 @@ namespace SuperSonicML::Hooks {
 
 			// Make it easier for the agent to hit the ball into positions it wasn't in before, bringing more diversity into the dataset
 			std::call_once(onceFlag, [&](){
+				
+				SuperSonicML::Share::gameWrapper->GetEngine().SetMaxPhysicsSubsteps(50);
 			  //ball.SetCarBounceScale(2);
 
 			  //ball.SetBallScale(2); // Make ball bigger
