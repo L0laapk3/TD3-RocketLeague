@@ -5,24 +5,22 @@
 
 #include "GameData.h"
 #include <atomic>
-
+#include <random>
 
 
 constexpr bool LEARN_GPU = true;
 constexpr bool EVAL_GPU = false;
 
 constexpr size_t BATCH_SIZE = 512;          // minibatch size
-constexpr double GAMMA = 0.99;             // discount factor
+constexpr double GAMMA = 0.999;             // discount factor
 constexpr double TAU = 1e-3;               // for soft update of target parameters
 constexpr double LR_CRITIC = 1e-3; //1e-3  // learning rate of the critic
 constexpr double LR_ACTOR =  1e-4; //1e-4  // learning rate of the actor
 constexpr double WEIGHT_DECAY = 0;         // L2 weight decay
 constexpr bool   ADD_NOISE = true;
 
-constexpr bool LOAD_PREVIOUS = true;
+constexpr bool LOAD_PREVIOUS = false;
 
-
-int Agent::totalNumberOfAgents = 0;
 
 static const std::string basePath = "C:/Users/Kris/Documents/coding/RLBot/ML/DDPG-RocketLeague/checkpoints/";
 Agent::Agent() :
@@ -48,6 +46,20 @@ Agent::Agent() :
 
 void Agent::act(const Observation& state, Action& actionOutput) {
 
+    static long i = 0;
+    if (!LOAD_PREVIOUS && i < 8000*60*5) {
+        i++;
+        char buf[200];
+        sprintf_s(buf, "random outputs %dk/%dk", i/1000, 8000*60*5/1000);
+        if (i % 200000 == 0)
+            SuperSonicML::Share::cvarManager->log(buf);
+        static std::random_device rd;
+        static std::mt19937 e2(rd());
+        static std::uniform_real_distribution<float> randAction(-1.f, 1.f);
+        for (size_t i = 0; i < actionOutput.array.size(); i++)
+            actionOutput[i] = randAction(e2);
+        return;
+    }
 
 	
     // char buf[200];
@@ -79,7 +91,6 @@ void Agent::reset() {
 void Agent::addExperienceState(Observation& state, Action& action, float reward, Observation& nextState, bool done) {
     if (*SuperSonicML::Share::cvarEnableTraining)
         memory.addExperienceState(state, action, reward, nextState, done);
-    // Learn, if enough samples are available in memory
 }
 
 void Agent::learn() {

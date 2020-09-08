@@ -12,17 +12,17 @@ public:
 	Observation(const Observation& o) : array(o.array) {};
 	~Observation() {};
 
-	static const int size = 2;
+	static const int size = 8;
 	union {
 		std::array<float, size> array;
 		struct {
-			// vec3c carPos;
+			vec2c carPos;
 			// vec3c carAng;
-			// vec3c carVel;
-			// vec3c carForward;
+			vec2c carVel;
+			vec2c carForward;
 			// vec3c carUp;
-			// vec3c targetPos;
-			vec2c targetLocalPos;
+			vec2c targetPos;
+			// vec2c targetLocalPos;
 		} named;
 	};
 	float& operator[] (const size_t i) { return array[i]; }

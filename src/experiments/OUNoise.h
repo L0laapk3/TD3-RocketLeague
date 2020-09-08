@@ -19,8 +19,8 @@ private:
     // float sigma=0.1;
 
     // // conservative/default
-    // float theta=0.01;
-    // float sigma=0.5;
+    // float theta=;
+    // float sigma=;
 
 public:
     OUNoise () {

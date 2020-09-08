@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="29">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>7</ID>
+      <Description>"SubstepDisabler"</Description>
+      <LastState Activated="1"/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[ENABLE]
+
+aobscanmodule(INJECT,RocketLeague.exe.unpacked.exe,0F 4E F0 0F 2F C1) // should be unique
+alloc(newmem,$1000,"RocketLeague.exe.unpacked.exe"+ED9AE8)
+
+label(code)
+label(return)
+
+//cmovle esi,eax
+
+newmem:
+
+code:
+  comiss xmm0,xmm1
+  jmp return
+
+INJECT:
+  jmp newmem
+  nop
+return:
+registersymbol(INJECT)
+
+[DISABLE]
+
+INJECT:
+  db 0F 4E F0 0F 2F C1
+
+unregistersymbol(INJECT)
+dealloc(newmem)
+
+
+</AssemblerScript>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+</CheatTable>

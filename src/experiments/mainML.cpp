@@ -16,7 +16,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
 	env->reset();
 	env->observe();
 
-	for (auto i = 0ULL; i < 1000; i++) {
+	for (auto i = 0ULL; i < 600; i++) {
 		agent.act(env->observation, env->action);
 		actCount++;
 		auto oldObservation = env->observation;
@@ -41,7 +41,7 @@ void trainEnvironment(Environment* env, Agent& agent) {
     if (elapsed >= 2.f) {
         char buf[200];
 		
-        sprintf_s(buf, "%d tps | %d lps | %.2f avgReward | %d avgLastDist | %s %s", (int)(actCount / elapsed), (int)(learnCount / elapsed), (totalReward / totalSteps), (int)lastDist, agent.actorLocal->toString().c_str(), agent.criticLocal->toString().c_str());
+        sprintf_s(buf, "%d tps (%dx) | %d lps | %.2f avgReward | %d avgLastDist | %s %s", (int)(actCount / elapsed), (int)(actCount / elapsed / 120.f), (int)(learnCount / elapsed), (totalReward / totalSteps), (int)lastDist, agent.actorLocal->toString().c_str(), agent.criticLocal->toString().c_str());
         SuperSonicML::Share::cvarManager->log(buf);
         lastMsg = now;
         actCount = 0;

@@ -87,12 +87,26 @@ namespace SuperSonicML::Hooks {
 			memset(&vehicleInput->NewInput, 0, sizeof(ControllerInput));
 			currentExperiment->process(botInputData, vehicleInput->NewInput, &myCar, &ball);
 
+			
+			static int lastRender = -1;
+			if (lastRender != (int)*SuperSonicML::Share::cvarRender) {
+				if (*SuperSonicML::Share::cvarRender) {
+					SuperSonicML::Share::cvarManager->getCvar("sv_soccar_gamespeed").setValue(99999);
+					SuperSonicML::Share::cvarManager->getCvar("cl_rendering_disabled").setValue(0);
+					SuperSonicML::Share::gameWrapper->GetEngine().SetMaxPhysicsSubsteps(5);
+				} else {
+					SuperSonicML::Share::cvarManager->getCvar("sv_soccar_gamespeed").setValue(4);
+					SuperSonicML::Share::cvarManager->getCvar("cl_rendering_disabled").setValue(1);
+					SuperSonicML::Share::gameWrapper->GetEngine().SetMaxPhysicsSubsteps(2000);
+				}
+				lastRender = (int)*SuperSonicML::Share::cvarRender;
+			}
+
 			static std::once_flag onceFlag;
 
 			// Make it easier for the agent to hit the ball into positions it wasn't in before, bringing more diversity into the dataset
 			std::call_once(onceFlag, [&](){
 				
-				SuperSonicML::Share::gameWrapper->GetEngine().SetMaxPhysicsSubsteps(50);
 			  //ball.SetCarBounceScale(2);
 
 			  //ball.SetBallScale(2); // Make ball bigger

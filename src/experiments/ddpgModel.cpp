@@ -47,9 +47,9 @@ void Actor::reset_parameters() {
 torch::Tensor Actor::forward(torch::Tensor x)
 {
     x = fc1->forward(x);
-    x = torch::relu(x);
+    x = torch::leaky_relu(x);
     x = fc2->forward(x);
-    x = torch::relu(x);
+    x = torch::leaky_relu(x);
     x = fc3->forward(x);
     x = torch::tanh(x);
     return x;
@@ -127,10 +127,10 @@ torch::Tensor Critic::forward(torch::Tensor x, torch::Tensor action)
     if (action.dim() == 1)
         action = torch::unsqueeze(action,0);
 
-    auto xs = torch::relu(fcs1->forward(x));
+    auto xs = torch::leaky_relu(fcs1->forward(x));
 //    xs = bn1->forward(xs);
     x = torch::cat({xs,action}, /*dim=*/1);
-    x = torch::relu(fc2->forward(x));
+    x = torch::leaky_relu(fc2->forward(x));
     return fc3->forward(x);
 }
 
